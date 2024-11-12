@@ -1,0 +1,22 @@
+{
+    "name": "ateodocio/bookreviews",
+    "description": "A full stack project based on AMP stack.",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Aena Teodocio",
+            "email": "ateodocio@academic.rrc.ca",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.4 || ^8.0",
+        "monolog/monolog": "^2.0"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

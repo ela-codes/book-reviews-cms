@@ -1,0 +1,32 @@
+# Ignore composer dependencies
+/vendor/
+
+# Ignore PHPStorm and other IDE configurations
+/.idea/
+/.vscode/
+
+# Ignore OS-generated files
+.DS_Store
+Thumbs.db
+
+# Ignore PHP-specific caches and logs
+*.log
+*.cache
+*.tmp
+
+# Ignore PHPUnit result files
+.phpunit.result.cache
+
+# Ignore Laravel/Symfony-specific directories (if using these frameworks)
+/storage/
+/bootstrap/cache/
+/.env
+
+# Ignore any other environment-specific files
+*.env.*
+.env
+
+# Ignore build and deployment files
+/node_modules/
+/public/build/
+/dist/
