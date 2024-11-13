@@ -30,3 +30,5 @@ Thumbs.db
 /node_modules/
 /public/build/
 /dist/
+*.log*
+rules.txt
