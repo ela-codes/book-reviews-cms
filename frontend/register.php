@@ -46,8 +46,18 @@ function checkPasswordMatch($password, $confirm_password) {
  * Checks whether the string of password passes the validation rule.
  */
 function checkPasswordPattern($password) {
-    return preg_match("/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/", trim($password)) == 1;
+    return preg_match("/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/", trim($password)) === 1;
 }
+
+/**
+ * Checks whether the string of username passes the validation rule.
+ */
+function checkValidUsername($username) {
+    $username = trim($username); // Remove leading and trailing whitespace
+    return $username !== "" && preg_match('/^[a-zA-Z0-9]+$/', $username) === 1;
+}
+
+
 
 /**
  * Adds new user to database.
@@ -56,9 +66,10 @@ function addUser($username, $password, $email) {
 
 }
 
-
+$usernameFeedback = "";
 $passwordFeedback = "";
 $focusPassword = false;
+$focusUsername = false;
 
 
 /**
@@ -74,24 +85,31 @@ if (isset($_POST["username"]) && isset($_POST["email"]) && isset($_POST["passwor
 
     $logger->debug("Form submitted: Username - $username, Email - $email, Password - $password, Confirm_Password - $confirm_password");
 
-    // perform data validation
-    if ($username && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    // perform data validation on sanitized data
+    if ($username && checkValidUsername($username)) {
+        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
-        $isExistingUser = checkUserExists($db, $username, $email);
-        $isMatchingPassword = checkPasswordMatch($password, $confirm_password);
+            $isExistingUser = checkUserExists($db, $username, $email);
+            $isMatchingPassword = checkPasswordMatch($password, $confirm_password);
+            
+    
+            if (!$isExistingUser && $isMatchingPassword) {
+                $isValidPasswordPattern = checkPasswordPattern($password);
 
-        if (!$isExistingUser && $isMatchingPassword) {
-            $isValidPasswordPattern = checkPasswordPattern($password);
-            if ($isValidPasswordPattern) {
-                addUser($username, $email, $password);
+                if ($isValidPasswordPattern) {
+                    addUser($username, $email, $password);
+                } else {
+                    $passwordFeedback = "Passwords must be at least 6 characters long. \n It must contain 1 letter and 1 number.";
+                    $focusPassword = true; // Set focus to password if pattern validation fails
+                }
             } else {
-                $passwordFeedback = "Passwords must be at least 6 characters long. \n It must contain 1 letter and 1 number.";
-                $focusPassword = true; // Set focus to password if pattern validation fails
+                $passwordFeedback = "Both passwords must match.";
+                $focusPassword = true; // Set focus to password if password mismatch occurs
             }
-        } else {
-            $passwordFeedback = "Both passwords must match.";
-            $focusPassword = true; // Set focus to password if password mismatch occurs
         }
+    } else {
+        $usernameFeedback = "Please enter a valid username.";
+        $focusUsername = true; // Set focus to password if username validation fails
     }
 }
 ?>
@@ -111,20 +129,21 @@ if (isset($_POST["username"]) && isset($_POST["email"]) && isset($_POST["passwor
             <ul class="list-unstyled">
                 <li>
                     <label for="username">Username</label>
-                    <input type="text" name="username" id="username" class="form-control" value="bobthebuilder" required/>
+                    <input type="text" name="username" id="username" class="form-control" required/>
+                    <div id="usernameFeedback" class="text-danger"><?= $usernameFeedback ?></div>
                 </li>
                 <li>
                     <label for="email">Email</label>
-                    <input type="email" name="email" id="email" class="form-control" value="bob@test.com" required/>
+                    <input type="email" name="email" id="email" class="form-control" required/>
                 </li>
                 <li>
                     <label for="password">Password</label>
-                    <input type="password" name="password" id="password" class="form-control" value="12345" required/>
+                    <input type="password" name="password" id="password" class="form-control" required/>
                 </li>
                 <li>
                     <label for="confirm_password">Confirm Password</label>
-                    <input type="password" name="confirm_password" id="confirm_password" class="form-control" value="12345" required/>
-                    <div id="passwordFeedback"><?= $passwordFeedback ?></div>
+                    <input type="password" name="confirm_password" id="confirm_password" class="form-control" required/>
+                    <div id="passwordFeedback" class="text-danger"><?= $passwordFeedback ?></div>
                 </li>
                 <button type="submit" class="btn btn-primary mt-3">Register</button>
             </ul>
@@ -139,6 +158,10 @@ if (isset($_POST["username"]) && isset($_POST["email"]) && isset($_POST["passwor
     <script>
         <?php if ($focusPassword): ?>
             document.getElementById('password').focus();  // Focus password field if there is an error
+        <?php endif; ?>
+
+        <?php if ($focusUsername): ?>
+            document.getElementById('username').focus();  // Focus username field if there is an error
         <?php endif; ?>
     </script>
 </body>
