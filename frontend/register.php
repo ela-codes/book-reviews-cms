@@ -58,6 +58,7 @@ function addUser($username, $password, $email) {
 
 
 $passwordFeedback = "";
+$focusPassword = false;
 
 
 /**
@@ -85,9 +86,11 @@ if (isset($_POST["username"]) && isset($_POST["email"]) && isset($_POST["passwor
                 addUser($username, $email, $password);
             } else {
                 $passwordFeedback = "Passwords must be at least 6 characters long. \n It must contain 1 letter and 1 number.";
+                $focusPassword = true; // Set focus to password if pattern validation fails
             }
         } else {
             $passwordFeedback = "Both passwords must match.";
+            $focusPassword = true; // Set focus to password if password mismatch occurs
         }
     }
 }
@@ -132,6 +135,12 @@ if (isset($_POST["username"]) && isset($_POST["email"]) && isset($_POST["passwor
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        <?php if ($focusPassword): ?>
+            document.getElementById('password').focus();  // Focus password field if there is an error
+        <?php endif; ?>
+    </script>
 </body>
 </html>
 
