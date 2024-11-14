@@ -62,8 +62,22 @@ function checkValidUsername($username) {
 /**
  * Adds new user to database.
  */
-function addUser($username, $password, $email) {
+function addUser($db, $username, $password, $email) {
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT); // using bcrypt hashing algorithm
+    $defaultRole = "USER";
 
+    $query = "INSERT INTO user(username, password, email, role) VALUES (:username, :password, :email, :role)";
+
+    $statement = $db->prepare($query);
+    $statement->bindValue(":username", trim($username));
+    $statement->bindValue(":email", trim($email));
+    $statement->bindValue(":password", $hashedPassword);
+    $statement->bindValue(":role", $defaultRole);
+
+    if($statement->execute()) {
+        header("Location: register_success.php?success=1");
+        exit();
+    }
 }
 
 $usernameFeedback = "";
@@ -97,7 +111,7 @@ if (isset($_POST["username"]) && isset($_POST["email"]) && isset($_POST["passwor
                 $isValidPasswordPattern = checkPasswordPattern($password);
 
                 if ($isValidPasswordPattern) {
-                    addUser($username, $email, $password);
+                    addUser($db, $username, $email, $password);
                 } else {
                     $passwordFeedback = "Passwords must be at least 6 characters long. \n It must contain 1 letter and 1 number.";
                     $focusPassword = true; // Set focus to password if pattern validation fails
@@ -108,7 +122,7 @@ if (isset($_POST["username"]) && isset($_POST["email"]) && isset($_POST["passwor
             }
         }
     } else {
-        $usernameFeedback = "Please enter a valid username.";
+        $usernameFeedback = "Please enter a username containing only letters and numbers.";
         $focusUsername = true; // Set focus to password if username validation fails
     }
 }
