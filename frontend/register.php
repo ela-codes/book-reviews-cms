@@ -11,7 +11,7 @@ use Monolog\Handler\StreamHandler;
 
 // Create a logger instance
 $logger = new Logger('registration');
-$logger->pushHandler(new StreamHandler('./register.log', Logger::DEBUG));
+$logger->pushHandler(new StreamHandler('./logs/register.log', Logger::DEBUG));
 $logger->info('Registration page loaded');
 
 
