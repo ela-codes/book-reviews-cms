@@ -1,17 +1,9 @@
 <?php
 require __DIR__ . '/../../backend/config/database.php';
-require __DIR__ . '/../../vendor/autoload.php';
-
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
+require __DIR__ . '/../../debug/logger.php';
 
 // Create a logger instance
-$logger = new Logger('login');
-$logger->pushHandler(new StreamHandler('./../logs/login.log', Logger::DEBUG));
+$logger = getLogger("AuthLog", __DIR__ . '/../../debug/userAuth.log');
 $logger->info('Login page loaded');
 
 /**
@@ -21,7 +13,7 @@ $logger->info('Login page loaded');
  * @param string $password A string representation of an email.
  * @return bool Returns true if the user is an authorized user. False, otherwise.
  */
-function validateLogin($db, $username, $password)
+function validateLogin($db, $username, $password, $logger)
 {
     // fetch the stored password based on username
     $statement = $db->prepare("SELECT password FROM user WHERE username = :username");
@@ -32,12 +24,12 @@ function validateLogin($db, $username, $password)
 
     // check that password related to that username exists and it passes verification 
     $isPasswordValid = password_verify($password, $hashedPassword);
-
+    
     return $hashedPassword && $isPasswordValid;
 
 }
 
-
+// declare global variables
 $usernameFeedback = "";
 $passwordFeedback = "";
 $isValidCredentials = null;
@@ -50,12 +42,12 @@ if (isset($_POST["username"]) && isset($_POST["password"])) {
     $logger->debug("Form submitted: Username - $username, Password - $password");
 
     // perform data validation on sanitized data
-    if (validateLogin($db, $username, $password)) {
+    if (validateLogin($db, $username, $password, $logger)) {
         // set user session
         session_start();
 
         $isValidCredentials = true; // set toggle to enable feedback message
-        $logger->debug("session started...");
+        $logger->debug("password verified. session started...");
         $_SESSION["username"] = $username;
         $_SESSION["logged_in"] = true;
         $_SESSION["last_activity"] = time();
@@ -88,7 +80,12 @@ if (isset($_POST["username"]) && isset($_POST["password"])) {
         <div class="container">
             <h2 class="mt-5">Welcome Back!</h2>
             <form action="login.php" method="post" id="loginForm">
-                <?php if (!$isValidCredentials): ?>
+                <?php if (isset($_GET['timeout']) && $_GET['timeout'] == 1): ?>
+                    <div class="alert alert-warning" role="alert">
+                        Your session has expired. Please log in again.
+                    </div>
+                <?php endif; ?>
+                <?php if ($_SERVER['REQUEST_METHOD'] === 'POST' && $isValidCredentials === false): ?>
                     <div class="alert alert-danger" role="alert">
                         Invalid username and/or password. Please try again.
                     </div>
@@ -96,12 +93,12 @@ if (isset($_POST["username"]) && isset($_POST["password"])) {
                 <ul class="list-unstyled">
                     <li>
                         <label for="username" class="form-label">Username</label>
-                        <input type="text" class="form-control" id="loginUsername" name="username" value="bobthebuilder"
+                        <input type="text" class="form-control" id="loginUsername" name="username" value=""
                             required />
                     </li>
                     <li>
                         <label for="username" class="form-label">Password</label>
-                        <input type="password" class="form-control" name="password" id="loginPassword" value="b12345"
+                        <input type="password" class="form-control" name="password" id="loginPassword" value=""
                             required />
                     </li>
                 </ul>
@@ -110,12 +107,6 @@ if (isset($_POST["username"]) && isset($_POST["password"])) {
             </form>
         </div>
     </main>
-
-    <?php if (isset($_GET['timeout']) && $_GET['timeout'] == 1): ?>
-        <div class="alert alert-warning" role="alert">
-            Your session has expired. Please log in again.
-        </div>
-    <?php endif; ?>
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"

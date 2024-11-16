@@ -1,6 +1,7 @@
 <?php
 require __DIR__ . '/../includes/session_handler.php';
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/../../vendor/autoload.php';
+checkSession();
 
 ?>
 
@@ -12,6 +13,6 @@ require __DIR__ . '/../vendor/autoload.php';
     <title>Book Reviews - Dashboard</title>
 </head>
 <body>
-    
+    welcome to your dashboard!
 </body>
 </html>
