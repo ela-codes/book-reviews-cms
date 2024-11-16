@@ -55,7 +55,7 @@ checkSession();
                                 </div>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link">Browse</a>
+                            <a href="./views/browse.php" class="nav-link">Browse</a>
                         </li>
                     </ul>
                 </div>

@@ -120,45 +120,67 @@ if (isset($_POST["username"]) && isset($_POST["email"]) && isset($_POST["passwor
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html class="h-100" lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book Reviews - Register</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
-<body>
-    <div class="container">
-        <h2 class="mt-5">Register</h2>
-        <form action="register.php" method="post" id="registerForm">
-            <ul class="list-unstyled">
-                <li>
-                    <label for="username">Username</label>
-                    <input type="text" name="username" id="username" class="form-control" required/>
-                    <div id="usernameFeedback" class="text-danger"><?= $usernameFeedback ?></div>
-                </li>
-                <li>
-                    <label for="email">Email</label>
-                    <input type="email" name="email" id="email" class="form-control" required/>
-                </li>
-                <li>
-                    <label for="password">Password</label>
-                    <input type="password" name="password" id="password" class="form-control" required/>
-                </li>
-                <li>
-                    <label for="confirm_password">Confirm Password</label>
-                    <input type="password" name="confirm_password" id="confirm_password" class="form-control" required/>
-                    <div id="passwordFeedback" class="text-danger"><?= $passwordFeedback ?></div>
-                </li>
-                <button type="submit" class="btn btn-primary mt-3">Register</button>
-            </ul>
-        </form>
+<body class="d-flex h-100">
+    <div class="container-fluid d-flex flex-column">
+        <header class="mb-auto">
+            <nav class="navbar navbar-expand-sm">
+                <div class="container h-100">
+                    <a href="../index.php" class="navbar-brand">BookReviews</a>
+                    <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#homeNav" aria-controls="homeNav" aria-label="Expand Navigation Bar">
+                        <div class="navbar-toggler-icon"></div>
+                    </button>
+                    <div class="collapse navbar-collapse" id="homeNav">
+                        <ul class="navbar-nav ms-auto">
+                            <li class="nav-item">
+                                <a href="../views/login.php" class="nav-link">Log In</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../views/browse.php" class="nav-link">Browse</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <main>
+            <div class="container w-50">
+                <h2 class="mt-5">Register</h2>
+                <form action="register.php" method="post" id="registerForm">
+                    <ul class="list-unstyled">
+                        <li>
+                            <label for="username">Username</label>
+                            <input type="text" name="username" id="username" class="form-control" required/>
+                            <div id="usernameFeedback" class="text-danger"><?= $usernameFeedback ?></div>
+                        </li>
+                        <li>
+                            <label for="email">Email</label>
+                            <input type="email" name="email" id="email" class="form-control" required/>
+                        </li>
+                        <li>
+                            <label for="password">Password</label>
+                            <input type="password" name="password" id="password" class="form-control" required/>
+                        </li>
+                        <li>
+                            <label for="confirm_password">Confirm Password</label>
+                            <input type="password" name="confirm_password" id="confirm_password" class="form-control" required/>
+                            <div id="passwordFeedback" class="text-danger"><?= $passwordFeedback ?></div>
+                        </li>
+                        <button type="submit" class="btn btn-primary mt-3">Register</button>
+                    </ul>
+                </form>
+            </div>
+        </main>
+        <?php require __DIR__ . "/../includes/footer.php" ?>
     </div>
 
-    <!-- Link to Bootstrap JS and dependencies (jQuery and Popper.js) -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
     <script>
         <?php if ($focusPassword): ?>

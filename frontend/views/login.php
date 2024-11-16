@@ -65,7 +65,7 @@ if (isset($_POST["username"]) && isset($_POST["password"])) {
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html class="h-100" lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -75,39 +75,61 @@ if (isset($_POST["username"]) && isset($_POST["password"])) {
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 
-<body>
-    <main>
-        <div class="container">
-            <h2 class="mt-5">Welcome Back!</h2>
-            <form action="login.php" method="post" id="loginForm">
-                <?php if (isset($_GET['timeout']) && $_GET['timeout'] == 1): ?>
-                    <div class="alert alert-warning" role="alert">
-                        Your session has expired. Please log in again.
+<body class="d-flex h-100">
+    <div class="container-fluid d-flex flex-column">
+        <header class="mb-auto">
+            <nav class="navbar navbar-expand-sm">
+                <div class="container h-100">
+                    <a href="../index.php" class="navbar-brand">BookReviews</a>
+                    <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#homeNav" aria-controls="homeNav" aria-label="Expand Navigation Bar">
+                        <div class="navbar-toggler-icon"></div>
+                    </button>
+                    <div class="collapse navbar-collapse" id="homeNav">
+                        <ul class="navbar-nav ms-auto">
+                            <li class="nav-item">
+                                <a href="../views/register.php" class="nav-link">Register</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../views/browse.php" class="nav-link">Browse</a>
+                            </li>
+                        </ul>
                     </div>
-                <?php endif; ?>
-                <?php if ($_SERVER['REQUEST_METHOD'] === 'POST' && $isValidCredentials === false): ?>
-                    <div class="alert alert-danger" role="alert">
-                        Invalid username and/or password. Please try again.
-                    </div>
-                <?php endif; ?>
-                <ul class="list-unstyled">
-                    <li>
-                        <label for="username" class="form-label">Username</label>
-                        <input type="text" class="form-control" id="loginUsername" name="username" value=""
-                            required />
-                    </li>
-                    <li>
-                        <label for="username" class="form-label">Password</label>
-                        <input type="password" class="form-control" name="password" id="loginPassword" value=""
-                            required />
-                    </li>
-                </ul>
+                </div>
+            </nav>
+        </header>
+        <main>
+            <div class="container w-50">
+                <h2 class="mt-5">Welcome Back!</h2>
+                <form action="login.php" method="post" id="loginForm">
+                    <?php if (isset($_GET['timeout']) && $_GET['timeout'] == 1): ?>
+                        <div class="alert alert-warning" role="alert">
+                            Your session has expired. Please log in again.
+                        </div>
+                    <?php endif; ?>
+                    <?php if ($_SERVER['REQUEST_METHOD'] === 'POST' && $isValidCredentials === false): ?>
+                        <div class="alert alert-danger" role="alert">
+                            Invalid username and/or password. Please try again.
+                        </div>
+                    <?php endif; ?>
+                    <ul class="list-unstyled">
+                        <li>
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="loginUsername" name="username" value=""
+                                required />
+                        </li>
+                        <li>
+                            <label for="username" class="form-label">Password</label>
+                            <input type="password" class="form-control" name="password" id="loginPassword" value=""
+                                required />
+                        </li>
+                    </ul>
 
-                <button type="submit" class="btn btn-primary mt-3">Log In</button>
-            </form>
-        </div>
-    </main>
-
+                    <button type="submit" class="btn btn-primary mt-3">Log In</button>
+                </form>
+            </div>
+        </main>
+        <?php require __DIR__ . "/../includes/footer.php" ?>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"

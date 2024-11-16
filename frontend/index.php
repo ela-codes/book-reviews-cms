@@ -11,7 +11,7 @@
         <header class="mb-auto">
             <nav class="navbar navbar-expand-sm">
                 <div class="container h-100">
-                    <a href="#" class="navbar-brand">BookReviews</a>
+                    <a href="index.php" class="navbar-brand">BookReviews</a>
                     <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#homeNav" aria-controls="homeNav" aria-label="Expand Navigation Bar">
                         <div class="navbar-toggler-icon"></div>
                     </button>
@@ -21,7 +21,7 @@
                                 <a href="./views/login.php" class="nav-link">Log In</a>
                             </li>
                             <li class="nav-item">
-                                <a href="#" class="nav-link">Browse</a>
+                                <a href="./views/browse.php" class="nav-link">Browse</a>
                             </li>
                         </ul>
                     </div>
@@ -32,13 +32,12 @@
             <div class="container w-50">
                 <h1>Welcome to BookReviews.</h1>
                 <h6>Discover, review, and share your love for books.</h6>
-                <a class="btn btn-dark btn-lg mt-4" href="./register.php">Register for FREE</a>
+                <a class="btn btn-dark btn-lg mt-4" href="./views/register.php">Register for FREE</a>
 
             </div>
         </main>
-        <footer class="mt-auto">
-            <p>Created by <a class="link-dark" href="https://github.com/ela-codes/book-reviews-cms">@ela-codes</a>.</p>
-        </footer>
+        <?php require __DIR__ . "/includes/footer.php" ?>
+
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
