@@ -13,7 +13,7 @@ $logger->info('Login page loaded');
  * @param string $password A string representation of an email.
  * @return bool Returns true if the user is an authorized user. False, otherwise.
  */
-function validateLogin($db, $username, $password, $logger)
+function validateLogin($db, $username, $password)
 {
     // fetch the stored password based on username
     $statement = $db->prepare("SELECT password FROM user WHERE username = :username");
@@ -42,7 +42,7 @@ if (isset($_POST["username"]) && isset($_POST["password"])) {
     $logger->debug("Form submitted: Username - $username, Password - $password");
 
     // perform data validation on sanitized data
-    if (validateLogin($db, $username, $password, $logger)) {
+    if (validateLogin($db, $username, $password)) {
         // set user session
         session_start();
 

@@ -1,19 +1,10 @@
 <?php
-require "../backend/config/database.php";
-require __DIR__ . '/../vendor/autoload.php';
-
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
+require __DIR__ . '/../../backend/config/database.php';
+require __DIR__ . '/../../debug/logger.php';
 
 // Create a logger instance
-$logger = new Logger('registration');
-$logger->pushHandler(new StreamHandler('./logs/register.log', Logger::DEBUG));
+$logger = getLogger("AuthLog", __DIR__ . '/../../debug/userAuth.log');
 $logger->info('Registration page loaded');
-
 
 /**
  * Checks whether the username and email exists in the user database.

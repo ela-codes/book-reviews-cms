@@ -32,4 +32,5 @@ Thumbs.db
 /dist/
 /logs/
 *.log*
+/debug/
 rules.txt
