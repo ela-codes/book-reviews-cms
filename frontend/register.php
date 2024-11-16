@@ -62,7 +62,7 @@ function checkValidUsername($username) {
 /**
  * Adds new user to database.
  */
-function addUser($db, $username, $password, $email) {
+function addUser($db, $username, $email, $password) {
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT); // using bcrypt hashing algorithm
     $defaultRole = "USER";
 
