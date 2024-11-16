@@ -1,6 +1,6 @@
 <?php 
 
-define("SESSION_TIMEOUT", 60);
+define("SESSION_TIMEOUT", 60 * 5);
 
 function checkSession() {
     session_start();
