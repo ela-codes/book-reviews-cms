@@ -25,7 +25,7 @@ checkSession();
     <header class="mb-auto">
         <nav class="navbar navbar-expand-sm">
             <div class="container h-100">
-                <a href="#" class="navbar-brand">BookReviews</a>
+                <a href="../index.php" class="navbar-brand">BookReviews</a>
                 <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#homeNav"
                     aria-controls="homeNav" aria-label="Expand Navigation Bar">
                     <div class="navbar-toggler-icon"></div>
@@ -63,9 +63,11 @@ checkSession();
         </nav>
     </header>
     <main>
-        <div class="container">
-            <h1>welcome to your dashboard!</h1>
-        </div>
+            <div class="container">
+                <h1>welcome to your dashboard!</h1>
+                <a class="btn btn-dark" href="../auth_user/post.php">Write a Review</a>
+            </div>
+
     </main>
 
 
