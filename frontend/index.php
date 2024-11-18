@@ -1,3 +1,27 @@
+<?php
+require '../frontend/includes/session_handler.php';
+require '../vendor/autoload.php';
+require '../backend/config/database.php';
+require '../debug/logger.php';
+
+// Create a logger instance
+$logger = getLogger("AuthLog", '../debug/userAuth.log');
+checkSession();
+
+$logger->info("Dashboard page loaded.");
+
+$loggedIn = false;
+$headerLink = __DIR__ . "/includes/guest_header.php";
+
+
+// if authenticated user session is active, show auth_header
+if (isset($_SESSION["username"])) {
+    $headerLink = __DIR__ . "/includes/auth_header.php";
+    $loggedIn = true;
+}
+
+?>
+
 <!DOCTYPE html>
 <html class="h-100" lang="en">
 <head>
@@ -8,31 +32,16 @@
 </head>
 <body class="d-flex h-100 text-center">
     <div class="container-fluid d-flex flex-column">
-        <header class="mb-auto">
-            <nav class="navbar navbar-expand-sm">
-                <div class="container h-100">
-                    <a href="index.php" class="navbar-brand">BookReviews</a>
-                    <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#homeNav" aria-controls="homeNav" aria-label="Expand Navigation Bar">
-                        <div class="navbar-toggler-icon"></div>
-                    </button>
-                    <div class="collapse navbar-collapse" id="homeNav">
-                        <ul class="navbar-nav ms-auto">
-                            <li class="nav-item">
-                                <a href="./views/login.php" class="nav-link">Log In</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="./views/browse.php" class="nav-link">Browse</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-        </header>
+        <?php require $headerLink ?>
         <main class="row">
             <div class="container w-50">
                 <h1>Welcome to BookReviews.</h1>
                 <h6>Discover, review, and share your love for books.</h6>
-                <a class="btn btn-dark btn-lg mt-4" href="./views/register.php">Register for FREE</a>
+                <?php if ($loggedIn): ?>
+                    <a class="btn btn-dark btn-lg mt-4" href="./views/dashboard.php">Return to Dashboard</a>
+                <?php else: ?>
+                    <a class="btn btn-dark btn-lg mt-4" href="./views/register.php">Register for FREE</a>
+                <?php endif; ?>
 
             </div>
         </main>

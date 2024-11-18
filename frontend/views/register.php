@@ -66,7 +66,7 @@ function addUser($db, $username, $email, $password) {
     $statement->bindValue(":role", $defaultRole);
 
     if($statement->execute()) {
-        header("Location: register_success.php?success=1");
+        header("Location: dashboard.php");
         exit();
     }
 }

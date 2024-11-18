@@ -1,8 +1,14 @@
 <?php
 require __DIR__ . '/../includes/session_handler.php';
 require __DIR__ . '/../../vendor/autoload.php';
+require __DIR__ . '/../../backend/config/database.php';
+require __DIR__ . '/../../debug/logger.php';
+
+// Create a logger instance
+$logger = getLogger("AuthLog", __DIR__ . '/../../debug/userAuth.log');
 checkSession();
 
+$logger->info("Dashboard page loaded for username - {$_SESSION["username"]}, id - {$_SESSION["user_id"]}");
 
 
 
@@ -11,7 +17,7 @@ checkSession();
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html class="h-100" lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -21,59 +27,24 @@ checkSession();
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 
-<body>
-    <header class="mb-auto">
-        <nav class="navbar navbar-expand-sm">
-            <div class="container h-100">
-                <a href="../index.php" class="navbar-brand">BookReviews</a>
-                <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#homeNav"
-                    aria-controls="homeNav" aria-label="Expand Navigation Bar">
-                    <div class="navbar-toggler-icon"></div>
-                </button>
-                <div class="collapse navbar-collapse" id="homeNav">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <button class="nav-link" data-bs-toggle="modal" data-bs-target="#modalId">Logout</button>
-
-                                <!-- Modal Body, hidden by default-->
-                                <div class="modal fade" id="modalId" tabindex="-1" role="dialog"
-                                    aria-labelledby="modalTitleId" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="modalTitleId">Log Out</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                    aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">Are you sure you want to log out?</div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                <a class="btn btn-primary" href="logout.php">Yes</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                        </li>
-                        <li class="nav-item">
-                            <a href="./views/browse.php" class="nav-link">Browse</a>
-                        </li>
-                    </ul>
+<body class="d-flex h-100">
+    <div class="container-fluid d-flex flex-column">
+        <?php require __DIR__ . "/../includes/auth_header.php" ?>
+        
+        <main>
+                <div class="container ">
+                    <h1>welcome to your dashboard!</h1>
+                    <a class="btn btn-dark" href="../auth_user/post_review.php">Write a Review</a>
                 </div>
-            </div>
-        </nav>
-    </header>
-    <main>
-            <div class="container">
-                <h1>welcome to your dashboard!</h1>
-                <a class="btn btn-dark" href="../auth_user/post.php">Write a Review</a>
-            </div>
 
-    </main>
+        </main>
+        <?php require __DIR__ . "/../includes/footer.php" ?>
 
-
+    
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
 </body>
 
 </html>

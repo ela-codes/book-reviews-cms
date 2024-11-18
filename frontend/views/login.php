@@ -26,7 +26,20 @@ function validateLogin($db, $username, $password)
     $isPasswordValid = password_verify($password, $hashedPassword);
     
     return $hashedPassword && $isPasswordValid;
+}
 
+/**
+ * Retrieves the user id based on the submitted username.
+ * @param PDO $db A PDO object representing the user database.
+ * @param string $username A string representation of a username.
+ * @return string A string representing the user id.
+ */
+function getUserId($db, $username) {
+    $statement = $db->prepare("SELECT user_id FROM user WHERE username = :username");
+    $statement->bindValue(":username", $username);
+    $statement->execute();
+
+    return $statement->fetchColumn();
 }
 
 // declare global variables
@@ -39,7 +52,7 @@ if (isset($_POST["username"]) && isset($_POST["password"])) {
     $username = filter_input(INPUT_POST, "username", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-    $logger->debug("Form submitted: Username - $username, Password - $password");
+    $logger->debug("Form submitted: Username - $username");
 
     // perform data validation on sanitized data
     if (validateLogin($db, $username, $password)) {
@@ -49,8 +62,11 @@ if (isset($_POST["username"]) && isset($_POST["password"])) {
         $isValidCredentials = true; // set toggle to enable feedback message
         $logger->debug("password verified. session started...");
         $_SESSION["username"] = $username;
+        $_SESSION["user_id"] = getUserId($db, $username);
         $_SESSION["logged_in"] = true;
         $_SESSION["last_activity"] = time();
+
+        $logger->debug("Session created succesful: Username - {$_SESSION["username"]}, User_id - {$_SESSION["user_id"]}");
 
         // redirect user to user's dashboard page
         header("Location: dashboard.php");
