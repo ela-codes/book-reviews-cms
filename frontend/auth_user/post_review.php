@@ -4,7 +4,7 @@ require __DIR__ . '/../../vendor/autoload.php';
 require __DIR__ . '/../../backend/config/database.php';
 require __DIR__ . '/../../debug/logger.php';
 
-// Create a logger instance
+
 $logger = getLogger("AuthLog", __DIR__ . '/../../debug/userAuth.log');
 $logger->info('USER-Post page loaded');
 
@@ -32,9 +32,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $query = "INSERT INTO review(review_content, book_title, book_author, book_rating, reviewer_id) VALUES (:review_content, :book_title, :book_author, :book_rating, :reviewer_id)";
 
             $statement = $db->prepare($query);
-            $statement->bindValue(":review_content", ucwords($review_content)); // proper casing
+            $statement->bindValue(":review_content", $review_content); // proper casing
             $statement->bindValue(":book_title", ucwords($book_title)); // proper casing
-            $statement->bindValue(":book_author", $book_author);
+            $statement->bindValue(":book_author", ucwords($book_author));
             $statement->bindValue(":book_rating", $book_rating);
             $statement->bindValue(":reviewer_id", $reviewer_id);
 
@@ -44,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $last_id = $db->lastInsertId();
 
                 // Redirect to the new blog post page
-                header("Location: ../../views/review.php?id={$last_id}");
+                header("Location: ../views/review.php?id={$last_id}");
                 exit;
             }
 

@@ -4,12 +4,11 @@ require '../vendor/autoload.php';
 require '../backend/config/database.php';
 require '../debug/logger.php';
 
-// Create a logger instance
-$logger = getLogger("AuthLog", '../debug/userAuth.log');
-checkSession();
 
+$logger = getLogger("AuthLog", '../debug/userAuth.log');
 $logger->info("Dashboard page loaded.");
 
+session_start();
 $loggedIn = false;
 $headerLink = __DIR__ . "/includes/guest_header.php";
 

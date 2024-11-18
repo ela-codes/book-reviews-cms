@@ -1,14 +1,33 @@
 <?php
-// require __DIR__ . '/../includes/session_handler.php';
-// require __DIR__ . '/../../vendor/autoload.php';
-// require __DIR__ . '/../../backend/config/database.php';
-// require __DIR__ . '/../../debug/logger.php';
 
-// // Create a logger instance
-// $logger = getLogger("AuthLog", __DIR__ . '/../../debug/userAuth.log');
-// checkSession();
+require __DIR__ . '/../includes/session_handler.php';
+require __DIR__ . '/../../vendor/autoload.php';
+require __DIR__ . '/../../backend/config/database.php';
+require __DIR__ . '/../../debug/logger.php';
 
-// $logger->info("Dashboard page loaded for username - {$_SESSION["username"]}, id - {$_SESSION["user_id"]}");
+$logger = getLogger("AuthLog", __DIR__ . '/../../debug/userAuth.log');
+$logger->info("Full review page loaded");
+
+session_start();
+
+$headerLink = __DIR__ . "/../includes/guest_header.php";
+
+// if authenticated user session is active, show auth_header
+if (isset($_SESSION["username"])) {
+    $headerLink = __DIR__ . "/../includes/auth_header.php";
+}
+
+
+function getUsername($db, $user_id) {
+    $query = "SELECT username FROM user WHERE user_id = :id";
+    $statement = $db->prepare($query);
+    $statement->bindValue(':id', $user_id, PDO::PARAM_INT);
+    $statement->execute();
+    $result = $statement->fetchColumn();
+
+    return $result;
+}
+
 
 if($_SERVER["REQUEST_METHOD"] === "GET") {
     // Sanitize
@@ -18,15 +37,18 @@ if($_SERVER["REQUEST_METHOD"] === "GET") {
     if(filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT)) {
 
         // Build and prepare SQL String with :id placeholder parameter.
-        $query = "SELECT * FROM review WHERE id = :id";
+        $query = "SELECT * FROM review WHERE review_id = :id";
         $statement = $db->prepare($query);
 
         // Bind the :id parameter with binding-type of Integer.
-        $statement->bindValue('id', $id, PDO::PARAM_INT);
+        $statement->bindValue(':id', $id, PDO::PARAM_INT);
         $statement->execute();
 
         // Fetch the row selected by primary key id.
         $row = $statement->fetch();
+
+        $reviewer_username = getUsername($db, $row["reviewer_id"]);
+        $logger->debug("Showing review by $reviewer_username");
 
     } else {
         header("Location: dashboard.php"); // Redirect if ID is not an integer
@@ -40,43 +62,54 @@ if($_SERVER["REQUEST_METHOD"] === "GET") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book Reviews - Home</title>
+    <title>Book Reviews - Full Review</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
 </head>
-<body class="d-flex h-100 text-center">
+<body class="d-flex h-100">
+    <style>
+            /* Fade-in animation */
+            main {
+                opacity: 0; 
+                transition: opacity 0.25s ease-in; /* Smooth fade-in effect */
+            }
+            main.loaded {
+                opacity: 1;
+            }
+        </style>
     <div class="container-fluid d-flex flex-column">
-        <header class="mb-auto">
-            <nav class="navbar navbar-expand-sm">
-                <div class="container h-100">
-                    <a href="index.php" class="navbar-brand">BookReviews</a>
-                    <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#homeNav" aria-controls="homeNav" aria-label="Expand Navigation Bar">
-                        <div class="navbar-toggler-icon"></div>
-                    </button>
-                    <div class="collapse navbar-collapse" id="homeNav">
-                        <ul class="navbar-nav ms-auto">
-                            <li class="nav-item">
-                                <a href="./views/login.php" class="nav-link">Log In</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="./views/browse.php" class="nav-link">Browse</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="./views/browse.php" class="nav-link">Dashboard</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-        </header>
-        <main class="row">
-            <div class="container w-50">
+        <?php require $headerLink ?>
+        <main id="mainContent">
+            <div class="container w-75 mt-5 mb-5 border-start">
+                <?php if($row): ?>
+                    <h2 class="bg-dark text-white ps-2">Book review by <i><?= $reviewer_username ?></i>.</h2>
+                    <br>
+                    <h5 class="ps-2">
+                        <strong><?= $row["book_title"] ?></strong> by <strong><?= $row["book_author"] ?></strong></u>
+                        (<?= $row["book_rating"] ?> <i class="bi bi-star-fill" style="color: #FDCC0D;"></i>)
+                    </h5>
+                    <p class="container ps-4 pe-3">
+                        <i class="bi bi-chat-right-quote-fill pe-2"></i>
+                        <?= nl2br($row["review_content"]) ?>
+                    </p>
+                    <p class="text-end pt-3 pe-3" style="font-size: 12px;">
+                        <i class="text-right">Last updated on <?= $row["last_modified"] ?>.</i>
+                    </p>
+                <?php else: ?>
+                <?php endif; ?>
 
 
             </div>
         </main>
-        <?php require __DIR__ . "/includes/footer.php" ?>
+        <?php require __DIR__ . "/../includes/footer.php" ?>
 
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        window.addEventListener("load", function() {
+            document.getElementById("mainContent").classList.add("loaded");
+        });
+    </script>
 </body>
 </html>

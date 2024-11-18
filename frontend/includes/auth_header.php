@@ -1,12 +1,15 @@
 <?php
-
+$logoutLink = "https://localhost/WD2/book-reviews-cms/frontend/views/logout.php";
+$indexLink = "https://localhost/WD2/book-reviews-cms/frontend/index.php";
+$dashboardLink = "https://localhost/WD2/book-reviews-cms/frontend/views/dashboard.php";
+$browseLink = "https://localhost/WD2/book-reviews-cms/frontend/views/browse.php";
 ?>
 
 
 <header class="mb-auto">
     <nav class="navbar navbar-expand-sm">
         <div class="container h-100">
-            <a href="../index.php" class="navbar-brand">BookReviews</a>
+            <a href=<?= $indexLink ?> class="navbar-brand">BookReviews</a>
             <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#homeNav" aria-controls="homeNav"
                 aria-label="Expand Navigation Bar">
                 <div class="navbar-toggler-icon"></div>
@@ -14,10 +17,10 @@
             <div class="collapse navbar-collapse" id="homeNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a href="../../frontend/views/dashboard.php" class="nav-link">Dashboard</a>
+                        <a href=<?= $dashboardLink ?> class="nav-link">Dashboard</a>
                     </li>
                     <li class="nav-item">
-                        <a href="../../frontend/views/browse.php" class="nav-link">Browse</a>
+                        <a href=<?= $browseLink ?> class="nav-link">Browse</a>
                     </li>
                     <li class="nav-item">
                         <button class="nav-link" data-bs-toggle="modal" data-bs-target="#modalId">Logout</button>
@@ -37,7 +40,7 @@
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary"
                                             data-bs-dismiss="modal">Cancel</button>
-                                        <a class="btn btn-primary" href="../index.php">Yes</a>
+                                        <a class="btn btn-primary" href=<?= $logoutLink ?>>Yes</a>
                                     </div>
                                 </div>
                             </div>
