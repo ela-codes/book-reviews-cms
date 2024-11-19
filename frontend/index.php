@@ -33,8 +33,8 @@ if (isset($_SESSION["username"])) {
     <div class="container-fluid d-flex flex-column">
         <?php require $headerLink ?>
         <main class="row">
-            <div class="container w-50">
-                <h1>Welcome to BookReviews.</h1>
+            <div class="container w-50  d-flex align-items-center flex-column">
+                <h1 class="bg-dark text-white ps-1" style="width:max-content;"> Welcome to BookReviews.</h1>
                 <h6>Discover, review, and share your love for books.</h6>
                 <?php if ($loggedIn): ?>
                     <a class="btn btn-dark btn-lg mt-4" href="./views/dashboard.php">Return to Dashboard</a>

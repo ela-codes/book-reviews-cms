@@ -12,7 +12,7 @@ $headerLink = __DIR__ . "/../includes/guest_header.php";
 
 function display_content_preview($content)
 {
-    $limit = 200;
+    $limit = 150;
     $max_characters = 0;
     $result = "";
     $contentLength = strlen($content);
@@ -56,8 +56,9 @@ $statement->execute();
 <body class="d-flex h-100">
     <div class="container-fluid d-flex flex-column">
         <?php require $headerLink ?>
-        <main id="mainContent" class="container w-75">
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3 my-4">
+        <main id="mainContent" class="container my-4">
+            <h2 class="bg-dark text-white ps-2 mb-3">our community readers</h2>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mx-5">
                 <?php while ($row = $statement->fetch()): ?>
                     <div class="col">
                         <a href="review.php?id=<?= $row["review_id"] ?>" style="text-decoration: none;">
@@ -67,8 +68,8 @@ $statement->execute();
                                     alt="card-image" />
                                 <div class="card-body">
                                     <div class="card-title">
-                                        <strong><?= $row["book_title"] ?></strong>
-                                        (<?= $row["book_rating"] ?> <i class="bi bi-star-fill" style="color: #FDCC0D;"></i> by <?php getUsername($db, $row["reviewer_id"]); ?>)
+                                        <p class="fs-6"><strong><?= $row["book_title"] ?></strong></p>
+                                        (<?= $row["book_rating"] ?> <i class="bi bi-star-fill" style="color: #FDCC0D;"></i> by <?= getUsername($db, $row["reviewer_id"]); ?>)
                                     </div>
                                     <p class="card-text"><?= display_content_preview($row['review_content']) ?></p>
                                 </div>
