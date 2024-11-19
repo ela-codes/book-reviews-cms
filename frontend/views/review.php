@@ -1,9 +1,9 @@
 <?php
-
 require __DIR__ . '/../includes/session_handler.php';
 require __DIR__ . '/../../vendor/autoload.php';
 require __DIR__ . '/../../backend/config/database.php';
 require __DIR__ . '/../../debug/logger.php';
+require __DIR__ . '/../includes/getUsername.php';
 
 $logger = getLogger("AuthLog", __DIR__ . '/../../debug/userAuth.log');
 $logger->info("Full review page loaded");
@@ -17,19 +17,7 @@ if (isset($_SESSION["username"])) {
     $headerLink = __DIR__ . "/../includes/auth_header.php";
 }
 
-
-function getUsername($db, $user_id) {
-    $query = "SELECT username FROM user WHERE user_id = :id";
-    $statement = $db->prepare($query);
-    $statement->bindValue(':id', $user_id, PDO::PARAM_INT);
-    $statement->execute();
-    $result = $statement->fetchColumn();
-
-    return $result;
-}
-
-
-if($_SERVER["REQUEST_METHOD"] === "GET") {
+if ($_SERVER["REQUEST_METHOD"] === "GET") {
     // Sanitize
     $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
 
@@ -65,23 +53,12 @@ if($_SERVER["REQUEST_METHOD"] === "GET") {
     <title>Book Reviews - Full Review</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
 </head>
 <body class="d-flex h-100">
-    <style>
-            /* Fade-in animation */
-            main {
-                opacity: 0; 
-                transition: opacity 0.25s ease-in; /* Smooth fade-in effect */
-            }
-            main.loaded {
-                opacity: 1;
-            }
-        </style>
     <div class="container-fluid d-flex flex-column">
         <?php require $headerLink ?>
         <main id="mainContent">
-            <div class="container w-75 mt-5 mb-5 border-start">
+            <div class="container w-75 my-4 border-start">
                 <?php if($row): ?>
                     <h2 class="bg-dark text-white ps-2">Book review by <i><?= $reviewer_username ?></i>.</h2>
                     <br>
@@ -94,9 +71,10 @@ if($_SERVER["REQUEST_METHOD"] === "GET") {
                         <?= nl2br($row["review_content"]) ?>
                     </p>
                     <p class="text-end pt-3 pe-3" style="font-size: 12px;">
-                        <i class="text-right">Last updated on <?= $row["last_modified"] ?>.</i>
+                        <i class="text-right text-secondary">Last updated on <?= $row["last_modified"] ?>.</i>
                     </p>
                 <?php else: ?>
+                    <h3>This post is not available.</h3>
                 <?php endif; ?>
 
 
@@ -106,10 +84,5 @@ if($_SERVER["REQUEST_METHOD"] === "GET") {
 
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script>
-        window.addEventListener("load", function() {
-            document.getElementById("mainContent").classList.add("loaded");
-        });
-    </script>
 </body>
 </html>
