@@ -16,7 +16,7 @@ function checkSession() {
         // Session has expired
         session_unset(); // Unset all session variables
         session_destroy(); // Destroy session
-        header("Location: login.php?timeout=1"); // Redirect with timeout message
+        header("Location: https://localhost/WD2/book-reviews-cms/frontend/views/login.php?timeout=1"); // Redirect with timeout message
         exit();
     }
 

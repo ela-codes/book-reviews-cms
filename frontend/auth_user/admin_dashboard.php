@@ -18,7 +18,7 @@ $headerLink = __DIR__ . "/../includes/admin_header.php";
 
 function getAllUsers($db)
 {
-    $query = "SELECT username, email, role, created_at FROM user";
+    $query = "SELECT username, email, role, created_at, created_by FROM user";
     $statement = $db->prepare($query);
 
     $statement->execute();
@@ -51,27 +51,25 @@ $users = getAllUsers($db);
     <div class="container-fluid d-flex flex-column">
         <?php require $headerLink ?>
         <main id="mainContent" class="container h-100 my-4">
-            <h2 class="bg-dark text-white ps-2 mb-3">admin dashboard</h2>
-            <div class="row">
+            <h2 class="bg-dark text-white ps-2 mb-5">admin dashboard</h2>
+            <div class="row my-3">
                 <div class="col">
                     <h5>Number of active users: <?= count($users); ?></h5>
                 </div>
-                <div class="col"> <!-- Modal trigger button -->
-                    <button type="button" class="btn btn-primary btn-md btn-dark text-white float-end"
-                        data-bs-toggle="modal" data-bs-target="#modalAddUser">
-                        Add New User
-                    </button>
+                <div class="col">
+                    <a href="https://localhost/WD2/book-reviews-cms/frontend/views/register.php"
+                        class="btn btn-primary btn-md btn-dark text-white float-end">Add New User</a>
                 </div>
             </div>
-
             <div class="table-responsive">
-                <table class="table table-light">
+                <table class="table table-striped">
                     <thead>
                         <tr>
                             <th scope="col">Username</th>
                             <th scope="col">Email</th>
                             <th scope="col">Role</th>
                             <th scope="col">Created At</th>
+                            <th scope="col">Created By</th>
                             <th scope="col" colspan="2">Modify</th>
 
                         </tr>
@@ -83,6 +81,7 @@ $users = getAllUsers($db);
                                 <td><?= $user["email"] ?></td>
                                 <td><?= $user["role"] ?></td>
                                 <td><?= $user["created_at"] ?></td>
+                                <td><?= $user["created_by"] ?></td>
                                 <td><i class="bi bi-pencil-square"></i></td>
                                 <td><i class="bi bi-trash3"></i></td>
                             </tr>
@@ -90,30 +89,6 @@ $users = getAllUsers($db);
                     </tbody>
                 </table>
             </div>
-
-            <div class="modal fade" id="modalAddUser" tabindex="-1" role="dialog" aria-labelledby="modalAddUser"
-                aria-hidden="true">
-                <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="modalAddUserTitle">
-                                Modal title
-                            </h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                Close
-                            </button>
-                            <button type="button" class="btn btn-primary">Save</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </main>
         <?php require __DIR__ . "/../includes/footer.php" ?>
 

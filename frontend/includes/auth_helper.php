@@ -14,17 +14,18 @@ function getUsername($db, $user_id) {
 /**
  * Adds new user to database.
  */
-function addUser($db, $username, $email, $password) {
+function addUser($db, $username, $email, $password, $created_by) {
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT); // using bcrypt hashing algorithm
     $defaultRole = "USER";
 
-    $query = "INSERT INTO user(username, password, email, role) VALUES (:username, :password, :email, :role)";
+    $query = "INSERT INTO user(username, password, email, role, created_by) VALUES (:username, :password, :email, :role, :created_by)";
 
     $statement = $db->prepare($query);
     $statement->bindValue(":username", trim($username));
     $statement->bindValue(":email", trim($email));
     $statement->bindValue(":password", $hashedPassword);
     $statement->bindValue(":role", $defaultRole);
+    $statement->bindValue(":created_by", $created_by);
 
     return $statement->execute();
 }
