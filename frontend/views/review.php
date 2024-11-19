@@ -3,7 +3,7 @@ require __DIR__ . '/../includes/session_handler.php';
 require __DIR__ . '/../../vendor/autoload.php';
 require __DIR__ . '/../../backend/config/database.php';
 require __DIR__ . '/../../debug/logger.php';
-require __DIR__ . '/../includes/getUsername.php';
+require __DIR__ . '/../includes/auth_helper.php';
 
 $logger = getLogger("AuthLog", __DIR__ . '/../../debug/userAuth.log');
 $logger->info("Full review page loaded");
@@ -35,8 +35,11 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
         // Fetch the row selected by primary key id.
         $row = $statement->fetch();
 
-        $reviewer_username = getUsername($db, $row["reviewer_id"]);
-        $logger->debug("Showing review by $reviewer_username");
+        if ($row) {
+            $reviewer_username = getUsername($db, $row["reviewer_id"]);
+            $logger->debug("Showing review by $reviewer_username");
+        }
+        
 
     } else {
         header("Location: dashboard.php"); // Redirect if ID is not an integer
@@ -74,7 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
                         <i class="text-right text-secondary">Last updated on <?= $row["last_modified"] ?>.</i>
                     </p>
                 <?php else: ?>
-                    <h3>This post is not available.</h3>
+                    <h3>Uh oh. This post is not available.</h3>
                 <?php endif; ?>
 
 

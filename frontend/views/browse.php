@@ -3,7 +3,7 @@ require __DIR__ . '/../includes/session_handler.php';
 require __DIR__ . '/../../vendor/autoload.php';
 require __DIR__ . '/../../backend/config/database.php';
 require __DIR__ . '/../../debug/logger.php';
-require __DIR__ . '/../includes/getUsername.php';
+require __DIR__ . '/../includes/auth_helper.php';
 
 $logger = getLogger("AuthLog", __DIR__ . '/../../debug/userAuth.log');
 $logger->info("Browse page loaded");
