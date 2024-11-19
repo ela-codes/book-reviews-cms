@@ -1,6 +1,7 @@
 <?php
 require __DIR__ . '/../../backend/config/database.php';
 require __DIR__ . '/../../debug/logger.php';
+require __DIR__ . '/../includes/auth_helper.php';
 
 // Create a logger instance
 $logger = getLogger("AuthLog", __DIR__ . '/../../debug/userAuth.log');
@@ -58,18 +59,25 @@ if (isset($_POST["username"]) && isset($_POST["password"])) {
     if (validateLogin($db, $username, $password)) {
         // set user session
         session_start();
+        $userId = getUserId($db, $username);
+        $userRole = getRole($db, $userId);
 
         $isValidCredentials = true; // set toggle to enable feedback message
         $logger->debug("password verified. session started...");
         $_SESSION["username"] = $username;
-        $_SESSION["user_id"] = getUserId($db, $username);
+        $_SESSION["user_id"] = $userId;
         $_SESSION["logged_in"] = true;
         $_SESSION["last_activity"] = time();
+        $_SESSION["role"] = $userRole;
 
         $logger->debug("Session created succesful: Username - {$_SESSION["username"]}, User_id - {$_SESSION["user_id"]}");
 
         // redirect user to user's dashboard page
-        header("Location: dashboard.php");
+        if ($userRole === "ADMIN") {
+            header("Location: https://localhost/WD2/book-reviews-cms/frontend/auth_user/admin_dashboard.php");
+        } elseif ($userRole === "USER") {
+            header("Location: https://localhost/WD2/book-reviews-cms/frontend/views/dashboard.php");
+        }
         exit();
     } else {
         // if invalid credentials show alert message

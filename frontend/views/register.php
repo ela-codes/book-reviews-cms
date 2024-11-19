@@ -102,7 +102,10 @@ if (isset($_POST["username"]) && isset($_POST["email"]) && isset($_POST["passwor
                 $isValidPasswordPattern = checkPasswordPattern($password);
 
                 if ($isValidPasswordPattern) {
-                    addUser($db, $username, $email, $password);
+                    if(addUser($db, $username, $email, $password)) {
+                        header("Location: dashboard.php");
+                        exit();
+                    }
                 } else {
                     $passwordFeedback = "Passwords must be at least 6 characters long. \n It must contain 1 letter and 1 number.";
                     $focusPassword = true; // Set focus to password if pattern validation fails
