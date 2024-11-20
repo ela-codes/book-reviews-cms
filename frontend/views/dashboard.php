@@ -65,7 +65,7 @@ $reviews = getAllReviews($db, $reviewer_id);
     <div class="container-fluid d-flex flex-column">
         <?php require __DIR__ . "/../includes/auth_header.php" ?>
 
-        <main class="container my-4">
+        <main class="container my-4 h-100">
             <h2 class="bg-dark text-white ps-2 my-5">welcome to your dashboard!</h2>
             <div class="row">
                 <div class="col">
@@ -75,22 +75,22 @@ $reviews = getAllReviews($db, $reviewer_id);
                         href="../auth_user/post_review.php">Write a Review</a>
                 </div>
             </div>
-            <div class="table-responsive my-4">
+            <div class="table-responsive my-5">
                 <table class="table table-sm table-hover align-middle">
                     <thead>
                         <tr>
-                            <th scope="col" class="col-3">Title</th>
+                            <th scope="col" class="col-2">Title</th>
                             <th scope="col" class="col-1">Author</th>
                             <th scope="col" class="col-1 text-center">Rating</th>
                             <th scope="col">Review</th>
-                            <th scope="col" class="text-center">Last Updated</th>
+                            <th scope="col" class="col-2 text-center">Last Updated</th>
                             <th scope="col" class="col-1 text-center" colspan="3"></th>
                         </tr>
                     </thead>
                     <tbody class="table-hover">
                         <?php if (count($reviews) === 0): ?>
                             <tr>
-                                <td colspan="7">No reviews found.</td>
+                                <td colspan="7">You haven't created any reviews yet!</td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($reviews as $review): ?>
@@ -98,7 +98,7 @@ $reviews = getAllReviews($db, $reviewer_id);
                                     <td><?= $review["book_title"] ?></td>
                                     <td><?= $review["book_author"] ?></td>
                                     <td class="text-center"><?= $review["book_rating"] ?></td>
-                                    <td><?= display_content_preview($review["review_content"], 70) ?></td>
+                                    <td><?= display_content_preview($review["review_content"], 80) ?></td>
                                     <td class="text-center"><?= display_content_preview($review["last_modified"], 10, "") ?></td>
                                     <td>
                                     <a href="review.php?id=<?= $review["review_id"] ?>" class="btn btn-sm"><i class="bi bi-box-arrow-up-right"></i></a>
