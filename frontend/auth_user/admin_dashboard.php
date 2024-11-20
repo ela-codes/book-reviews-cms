@@ -37,7 +37,7 @@ function editUser($db, $username, $email, $role, $id)
     $statement->bindValue(':username', $username);
     $statement->bindValue(':email', $email);
     $statement->bindValue(':role', $role);
-    $statement->bindValue(':id', $id);
+    $statement->bindValue(':id', $id, PDO::PARAM_INT);
     return $statement->execute();
 }
 
@@ -133,7 +133,7 @@ else if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["delete"]) && iss
 <body class="d-flex h-100">
     <div class="container-fluid d-flex flex-column">
         <?php require $headerLink ?>
-        <main id="mainContent" class="container h-100 my-4">
+        <main id="mainContent" class="container my-4">
             <h2 class="bg-dark text-white ps-2 my-5">admin dashboard</h2>
 
             <?php if (isset($_SESSION['success_message'])): ?>
@@ -162,7 +162,7 @@ else if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["delete"]) && iss
                 </div>
             </div>
             <div class="table-responsive">
-                <table class="table table-striped">
+                <table class="table table-sm table-striped">
                     <thead>
                         <tr>
                             <th scope="col">User ID</th>

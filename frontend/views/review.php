@@ -39,7 +39,6 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
             $reviewer_username = getUsername($db, $row["reviewer_id"]);
             $logger->debug("Showing review by $reviewer_username");
         }
-        
 
     } else {
         header("Location: dashboard.php"); // Redirect if ID is not an integer

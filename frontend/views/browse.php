@@ -8,7 +8,15 @@ require __DIR__ . '/../includes/auth_helper.php';
 $logger = getLogger("AuthLog", __DIR__ . '/../../debug/userAuth.log');
 $logger->info("Browse page loaded");
 
+session_start();
+
 $headerLink = __DIR__ . "/../includes/guest_header.php";
+
+
+// if authenticated user session is active, show auth_header
+if (isset($_SESSION["username"])) {
+    $headerLink = __DIR__ . "/../includes/auth_header.php";
+}
 
 function display_content_preview($content)
 {
@@ -31,7 +39,7 @@ function display_content_preview($content)
 
 
 // sortable by book title, user, last_updated
-$query = "SELECT * FROM review ORDER BY book_title ASC LIMIT 20;";
+$query = "SELECT * FROM review ORDER BY book_title ASC LIMIT 40;";
 $statement = $db->prepare($query);
 
 $statement->execute();
@@ -58,7 +66,7 @@ $statement->execute();
         <?php require $headerLink ?>
         <main id="mainContent" class="container my-4">
             <h2 class="bg-dark text-white ps-2 mb-3">our community readers</h2>
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mx-5">
+            <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 mx-3">
                 <?php while ($row = $statement->fetch()): ?>
                     <div class="col">
                         <a href="review.php?id=<?= $row["review_id"] ?>" style="text-decoration: none;">
