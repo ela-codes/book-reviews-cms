@@ -6,7 +6,7 @@ $browseLink = "https://localhost/WD2/book-reviews-cms/frontend/views/browse.php"
 ?>
 
 
-<header class="mb-auto">
+<header class="mb-auto border-">
     <nav class="navbar navbar-expand-sm">
         <div class="container h-100">
             <a href=<?= $indexLink ?> class="navbar-brand">BookReviews</a>

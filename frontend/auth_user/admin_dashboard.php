@@ -18,7 +18,7 @@ $headerLink = __DIR__ . "/../includes/admin_header.php";
 
 function getAllUsers($db)
 {
-    $query = "SELECT username, email, role, created_at, created_by FROM user";
+    $query = "SELECT user_id, username, email, role, created_at, created_by FROM user";
     $statement = $db->prepare($query);
 
     $statement->execute();
@@ -27,10 +27,57 @@ function getAllUsers($db)
     return $result;
 }
 
+function editUsername()
+{
+
+}
+
+function editEmail()
+{
+
+}
+
+function editRole()
+{
+
+}
+
+function deleteUser($db, $userId)
+{
+    try {
+        $query = "DELETE FROM user WHERE user_id = :id";
+        $statement = $db->prepare($query);
+        $statement->bindValue(':id', $userId, PDO::PARAM_INT);
+
+        return $statement->execute();
+    } catch (Exception $e) {
+        error_log("Error deleting user: " . $e->getMessage());
+        return false;
+    }
+}
+
+
+// Show all users in admin dashboard
 $users = getAllUsers($db);
 
 
 
+// Handle the user deletion
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["id"])) {
+    $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
+    $logger->debug("Received delete request for user #$id");
+
+    if (deleteUser($db, $id)) {
+        $_SESSION['success_message'] = "User deleted successfully.";
+        header("Location: admin_dashboard.php"); // Redirect to avoid form resubmission
+        exit();
+    } else {
+        $logger->debug("Failed to delete user.");
+        $_SESSION['error_message'] = "Failed to delete user.";
+        header("Location: admin_dashboard.php");
+        exit();
+    }
+}
 
 
 ?>
@@ -51,7 +98,24 @@ $users = getAllUsers($db);
     <div class="container-fluid d-flex flex-column">
         <?php require $headerLink ?>
         <main id="mainContent" class="container h-100 my-4">
-            <h2 class="bg-dark text-white ps-2 mb-5">admin dashboard</h2>
+            <h2 class="bg-dark text-white ps-2 my-5">admin dashboard</h2>
+
+            <?php if (isset($_SESSION['success_message'])): ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <?= $_SESSION['success_message']; ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <?php unset($_SESSION['success_message']); // Clear the message after displaying ?>
+            <?php endif; ?>
+
+            <?php if (isset($_SESSION['error_message'])): ?>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <?= $_SESSION['error_message']; ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <?php unset($_SESSION['error_message']); ?>
+            <?php endif; ?>
+
             <div class="row my-3">
                 <div class="col">
                     <h5>Number of active users: <?= count($users); ?></h5>
@@ -65,25 +129,65 @@ $users = getAllUsers($db);
                 <table class="table table-striped">
                     <thead>
                         <tr>
+                            <th scope="col">User ID</th>
                             <th scope="col">Username</th>
                             <th scope="col">Email</th>
                             <th scope="col">Role</th>
                             <th scope="col">Created At</th>
                             <th scope="col">Created By</th>
                             <th scope="col" colspan="2">Modify</th>
-
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($users as $user): ?>
                             <tr>
+                                <td><?= $user["user_id"] ?></td>
                                 <td><?= $user["username"] ?></td>
                                 <td><?= $user["email"] ?></td>
                                 <td><?= $user["role"] ?></td>
                                 <td><?= $user["created_at"] ?></td>
                                 <td><?= $user["created_by"] ?></td>
-                                <td><i class="bi bi-pencil-square"></i></td>
-                                <td><i class="bi bi-trash3"></i></td>
+                                <td>
+                                    <button class="btn" data-bs-toggle="modal" data-bs-target="#editUserModal">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
+                                </td>
+                                <td>
+                                    <button class="btn" data-bs-toggle="modal"
+                                        data-bs-target="#deleteUser-<?= $user["user_id"] ?>"><i class="bi bi-trash3"></i>
+                                    </button>
+                                    <!-- Modal Body, hidden by default-->
+                                    <div class="modal fade" id="deleteUser-<?= $user["user_id"] ?>" tabindex="-1"
+                                        role="dialog" aria-labelledby="#deleteUser-<?= $user["user_id"] ?>"
+                                        aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md"
+                                            role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="deleteUserModalTitle">Delete User</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p>Are you sure you want delete user
+                                                        <strong><mark><?= $user["username"] ?></mark></strong> from the
+                                                        system?
+                                                    </p>
+                                                    <p class="text-danger">This action cannot be reversed.</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">Cancel</button>
+                                                    <form action="admin_dashboard.php?>" method="post">
+                                                        <input type="hidden" name="id" value="<?= $user["user_id"] ?>">
+                                                        <input type="submit" name="delete" value="Delete"
+                                                            class="btn btn-primary" />
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
