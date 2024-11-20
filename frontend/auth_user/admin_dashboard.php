@@ -173,6 +173,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["id"])) {
                                                         <strong><mark><?= $user["username"] ?></mark></strong> from the
                                                         system?
                                                     </p>
+                                                    <p class="text-danger">All of the user's posts, comments, and images will be removed.</p>
                                                     <p class="text-danger">This action cannot be reversed.</p>
                                                 </div>
                                                 <div class="modal-footer">
