@@ -40,4 +40,24 @@ function getRole($db, $user_id) {
     return $result;
 }
 
+function checkValidUsername($username)
+{
+    $username = trim($username); // Remove leading and trailing whitespace
+    return $username !== "" && preg_match('/^[a-zA-Z0-9]+$/', $username) === 1;
+}
+
+function checkUserExists($db, $username, $email)
+{
+
+    $statement = $db->prepare("SELECT COUNT(*) FROM user WHERE username = :username AND email = :email");
+    $statement->bindValue(":username", strtolower(trim($username)));
+    $statement->bindValue(":email", strtolower(trim($email)));
+
+    $statement->execute();
+
+    $result = $statement->fetchColumn();
+
+    return $result > 0;
+}
+
 ?>

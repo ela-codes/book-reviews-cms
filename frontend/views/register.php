@@ -7,26 +7,6 @@ require __DIR__ . '/../includes/auth_helper.php';
 $logger = getLogger("AuthLog", __DIR__ . '/../../debug/userAuth.log');
 $logger->info('Registration page loaded');
 
-/**
- * Checks whether the username and email exists in the user database.
- * @param string $username A string representation of a username.
- * @param string $username A string representation of an email.
- * @return bool Whether the username and email exists in the user database. 
- */
-function checkUserExists($db, $username, $email)
-{
-
-    $statement = $db->prepare("SELECT COUNT(*) FROM user WHERE username = :username AND email = :email");
-    $statement->bindValue(":username", strtolower(trim($username)));
-    $statement->bindValue(":email", strtolower(trim($email)));
-
-    $statement->execute();
-
-    $result = $statement->fetchColumn();
-
-    return $result > 0;
-}
-
 
 /**
  * Checks whether the string of password matches.
@@ -42,15 +22,6 @@ function checkPasswordMatch($password, $confirm_password)
 function checkPasswordPattern($password)
 {
     return preg_match("/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/", trim($password)) === 1;
-}
-
-/**
- * Checks whether the string of username passes the validation rule.
- */
-function checkValidUsername($username)
-{
-    $username = trim($username); // Remove leading and trailing whitespace
-    return $username !== "" && preg_match('/^[a-zA-Z0-9]+$/', $username) === 1;
 }
 
 
@@ -114,7 +85,7 @@ if (isset($_POST["username"]) && isset($_POST["email"]) && isset($_POST["passwor
         }
     } else {
         $usernameFeedback = "Please enter a username containing only letters and numbers.";
-        $focusUsername = true; // Set focus to password if username validation fails
+        $focusUsername = true; // Set focus if username validation fails
     }
 }
 ?>
