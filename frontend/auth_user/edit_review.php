@@ -10,13 +10,13 @@ $logger->info('USER-Edit review page loaded');
 
 checkSession();
 
-
+// Handle GET request in order to display review data
 if ($_SERVER["REQUEST_METHOD"] === "GET") {
     // Sanitize
     $review_id = filter_input(INPUT_GET, 'review_id', FILTER_SANITIZE_NUMBER_INT);
 
     // Validate to ensure id is an integer
-    if(filter_input(INPUT_GET, 'review_id', FILTER_VALIDATE_INT)) {
+    if (filter_input(INPUT_GET, 'review_id', FILTER_VALIDATE_INT)) {
 
         // Build and prepare SQL String with :id placeholder parameter.
         $query = "SELECT * FROM review WHERE review_id = :review_id";
@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
         exit;
     }
 }
-
+// Handle edit review form submission
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (isset($_POST["review_content"]) && isset($_POST["book_title"]) && isset($_POST["book_author"]) && isset($_POST["book_rating"]) && isset($_POST["review_id"])) {
 
@@ -62,10 +62,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $statement->bindValue(":book_author", ucwords($book_author));
             $statement->bindValue(":book_rating", $book_rating);
             $statement->bindValue(":review_id", $review_id, PDO::PARAM_INT);
-            
+
             if ($statement->execute()) {
                 $logger->info("Review updated successfully for review ID: $review_id");
-                
+
                 // Redirect to the updated blog post page
                 header("Location: https://localhost/WD2/book-reviews-cms/frontend/views/review.php?id=$review_id");
                 exit;
@@ -74,6 +74,24 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 }
 
+// Handle delete review form submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["delete"]) && isset($_POST["review_id"])) {
+    $review_id = filter_input(INPUT_POST, 'review_id', FILTER_SANITIZE_NUMBER_INT);
+
+    try {
+            $query = "DELETE FROM review WHERE review_id = :review_id";
+            $statement = $db->prepare($query);
+            $statement->bindValue(':review_id', $review_id, PDO::PARAM_INT);
+            $statement->execute();
+            $_SESSION['success_message'] = "Review deleted successfully.";
+            $logger->info("Successfully deleted review with ID: $review_id");
+            header("Location: https://localhost/WD2/book-reviews-cms/frontend/views/dashboard.php");
+            exit();
+        } catch (Exception $e) {
+            $logger->error("Error deleting review: " . $e->getMessage());
+        }
+
+}
 ?>
 
 
@@ -99,34 +117,74 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     <ul class="list-unstyled">
                         <li>
                             <label for="book_title" class="form-label">Title</label>
-                            <input type="text" name="book_title" id="book_title" class="form-control" value="<?= htmlspecialchars($row['book_title']) ?>" required />
+                            <input type="text" name="book_title" id="book_title" class="form-control"
+                                value="<?= htmlspecialchars($row['book_title']) ?>" required />
                         </li>
                         <li>
                             <label for="book_author" class="form-label">Author</label>
-                            <input type="text" name="book_author" id="book_author" class="form-control" value="<?= htmlspecialchars($row['book_author']) ?>" required />
+                            <input type="text" name="book_author" id="book_author" class="form-control"
+                                value="<?= htmlspecialchars($row['book_author']) ?>" required />
                         </li>
 
                         <li>
                             <label for="book_rating" class="form-label">My Rating:</label><span class="ms-3 me-1"
                                 id="ratingValue"></span><i class="bi bi-star-fill" style="color: #FDCC0D;"></i>
-                            <input type="range" name="book_rating" class="form-range " min="1" max="5" step="0.5" value="<?= htmlspecialchars($row['book_rating']) ?>"
-                                id="ratingRange" required />
+                            <input type="range" name="book_rating" class="form-range " min="1" max="5" step="0.5"
+                                value="<?= htmlspecialchars($row['book_rating']) ?>" id="ratingRange" required />
                         </li>
                         <li>
                             <label for="review_content" class="form-label">How was the book?</label>
-                            <textarea class="form-control" name="review_content" id="review_content" rows="8" 
+                            <textarea class="form-control" name="review_content" id="review_content" rows="8"
                                 required><?= htmlspecialchars($row['review_content']) ?></textarea>
                         </li>
                         <li>
-                            <input type="text" name="review_id" id="review_id" class="form-control" value="<?= htmlspecialchars($row['review_id']) ?>" hidden />
+                            <input type="text" name="review_id" id="review_id" class="form-control"
+                                value="<?= htmlspecialchars($row['review_id']) ?>" hidden />
                         </li>
-                        
+
                         <div class="row">
-                            <div class="col"><button type="submit" class="btn btn-primary mt-3">Apply Changes</button></div>
-                            <div class="col"><button type="button" class="btn btn-light mt-3 float-end">Delete Review</button></div>
+                            <div class="col"><button type="submit" class="btn btn-primary mt-3">Apply Changes</button>
+                            </div>
+                            <div class="col">
+                                <button type="button" class="btn btn-light mt-3 float-end" data-bs-toggle="modal"
+                                    data-bs-target="#deleteReview-<?= $row["review_id"] ?>">Delete Review
+                                </button>
+                            </div>
                         </div>
                     </ul>
                 </form>
+
+                <!-- Modal Body, hidden by default-->
+                <div class="modal fade" id="deleteReview-<?= $row["review_id"] ?>" tabindex="-1"
+                                role="dialog" aria-labelledby="deleteReview-<?= $row["review_id"] ?>"
+                                aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md"
+                                    role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="deleteReviewModalTitle">Delete Review</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Are you sure you want to delete review your review for
+                                                <strong><mark><?= $row["book_title"] ?></mark></strong> by
+                                                <strong><mark><?= $row["book_author"] ?></mark></strong>?
+                                            </p>
+                                            <p class="text-danger">This action cannot be reversed.</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">Cancel</button>
+                                            <form action="edit_review.php" method="post">
+                                                <input type="hidden" name="review_id" value="<?= $row["review_id"] ?>">
+                                                <input type="hidden" name="delete" value="1">
+                                                <input type="submit" name="delete" value="Delete" class="btn btn-primary" />
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
             </div>
         </main>
         <?php require __DIR__ . "/../includes/footer.php" ?>

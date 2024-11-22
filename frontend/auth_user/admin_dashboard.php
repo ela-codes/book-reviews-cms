@@ -262,7 +262,7 @@ else if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["delete"]) && iss
                                                         aria-label="Close"></button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <p>Are you sure you want delete user
+                                                    <p>Are you sure you want to delete user
                                                         <strong><mark><?= $user["username"] ?></mark></strong> from the
                                                         system?
                                                     </p>

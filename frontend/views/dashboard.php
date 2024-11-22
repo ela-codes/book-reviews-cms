@@ -67,6 +67,13 @@ $reviews = getAllReviews($db, $reviewer_id);
 
         <main class="container my-4 h-100">
             <h2 class="bg-dark text-white ps-2 my-5">welcome to your dashboard!</h2>
+            <?php if (isset($_SESSION['success_message'])): ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <?= $_SESSION['success_message']; ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <?php unset($_SESSION['success_message']); // Clear the message after displaying ?>
+            <?php endif; ?>
             <div class="row">
                 <div class="col">
                     <h5>Number of posts: <?= count($reviews) ?></h5>
