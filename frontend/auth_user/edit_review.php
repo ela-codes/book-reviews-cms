@@ -79,17 +79,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["delete"]) && isset($_
     $review_id = filter_input(INPUT_POST, 'review_id', FILTER_SANITIZE_NUMBER_INT);
 
     try {
-            $query = "DELETE FROM review WHERE review_id = :review_id";
-            $statement = $db->prepare($query);
-            $statement->bindValue(':review_id', $review_id, PDO::PARAM_INT);
-            $statement->execute();
-            $_SESSION['success_message'] = "Review deleted successfully.";
-            $logger->info("Successfully deleted review with ID: $review_id");
-            header("Location: https://localhost/WD2/book-reviews-cms/frontend/views/dashboard.php");
-            exit();
-        } catch (Exception $e) {
-            $logger->error("Error deleting review: " . $e->getMessage());
-        }
+        $query = "DELETE FROM review WHERE review_id = :review_id";
+        $statement = $db->prepare($query);
+        $statement->bindValue(':review_id', $review_id, PDO::PARAM_INT);
+        $statement->execute();
+        $_SESSION['success_message'] = "Review deleted successfully.";
+        $logger->info("Successfully deleted review with ID: $review_id");
+        header("Location: https://localhost/WD2/book-reviews-cms/frontend/views/dashboard.php");
+        exit();
+    } catch (Exception $e) {
+        $logger->error("Error deleting review: " . $e->getMessage());
+    }
 
 }
 ?>
@@ -155,36 +155,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["delete"]) && isset($_
                 </form>
 
                 <!-- Modal Body, hidden by default-->
-                <div class="modal fade" id="deleteReview-<?= $row["review_id"] ?>" tabindex="-1"
-                                role="dialog" aria-labelledby="deleteReview-<?= $row["review_id"] ?>"
-                                aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md"
-                                    role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="deleteReviewModalTitle">Delete Review</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <p>Are you sure you want to delete review your review for
-                                                <strong><mark><?= $row["book_title"] ?></mark></strong> by
-                                                <strong><mark><?= $row["book_author"] ?></mark></strong>?
-                                            </p>
-                                            <p class="text-danger">This action cannot be reversed.</p>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary"
-                                                data-bs-dismiss="modal">Cancel</button>
-                                            <form action="edit_review.php" method="post">
-                                                <input type="hidden" name="review_id" value="<?= $row["review_id"] ?>">
-                                                <input type="hidden" name="delete" value="1">
-                                                <input type="submit" name="delete" value="Delete" class="btn btn-primary" />
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
+                <div class="modal fade" id="deleteReview-<?= $row["review_id"] ?>" tabindex="-1" role="dialog"
+                    aria-labelledby="deleteReview-<?= $row["review_id"] ?>" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteReviewModalTitle">Delete Review</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
                             </div>
+                            <div class="modal-body">
+                                <p>Are you sure you want to delete review your review for
+                                    <strong><mark><?= $row["book_title"] ?></mark></strong> by
+                                    <strong><mark><?= $row["book_author"] ?></mark></strong>?
+                                </p>
+                                <p class="text-danger">This action cannot be reversed.</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <form action="edit_review.php" method="post">
+                                    <input type="hidden" name="review_id" value="<?= $row["review_id"] ?>">
+                                    <input type="hidden" name="delete" value="1">
+                                    <input type="submit" name="delete" value="Delete" class="btn btn-primary" />
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
         <?php require __DIR__ . "/../includes/footer.php" ?>

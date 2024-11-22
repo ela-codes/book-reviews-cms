@@ -3,6 +3,7 @@ require __DIR__ . '/../includes/session_handler.php';
 require __DIR__ . '/../../vendor/autoload.php';
 require __DIR__ . '/../../backend/config/database.php';
 require __DIR__ . '/../../debug/logger.php';
+require __DIR__ . '/../includes/image_handler.php';
 
 
 $logger = getLogger("AuthLog", __DIR__ . '/../../debug/userAuth.log');
@@ -10,6 +11,7 @@ $logger->info('USER-Post page loaded');
 
 checkSession();
 
+$imageFeedback = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (isset($_POST["review_content"]) && isset($_POST["book_title"]) && isset($_POST["book_author"]) && isset($_POST["book_rating"])) {
@@ -18,7 +20,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $book_title = filter_input(INPUT_POST, 'book_title', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $book_author = filter_input(INPUT_POST, 'book_author', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $book_rating = filter_input(INPUT_POST, 'book_rating', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $logger->debug($review_content);
 
         // validate - ensure title and content is at least 1 character long each
         $valid_content = strlen(trim($review_content)) > 0;
@@ -28,18 +29,52 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         if ($valid_content && $valid_title && $valid_author) {
             $reviewer_id = $_SESSION["user_id"];
 
+            // handle optional image upload
+            if (isset($_FILES['review_image']) && $_FILES['review_image']['error'] === 0) {
+                $logger->info("Received file upload request through form.");
+                // retrieve necessary file information from file upload
+                $image_filename = $_FILES['review_image']['name'];
+                $temporary_path = $_FILES['review_image']['tmp_name'];
+                $logger->debug("Temp image path: $temporary_path");
+
+                // build image upload path
+                $new_path = getFileUploadPath($image_filename);
+                $logger->debug("Built image path: $new_path");
+
+                // move the file once its image-ness is verified
+                if (checkValidImage($temporary_path, $new_path)) {
+                    $logger->info("Image verified. Uploading to folder.");
+                    try {
+                        $result = move_uploaded_file($temporary_path, $new_path);
+                        
+                        if ($result) {
+                            $logger->info("File uploaded successfully to $new_path");
+                            $image_id = addImageToDatabase($db, $new_path);
+                        } else {
+                            $logger->error("Failed to move uploaded file.");
+                        }
+                    } catch (Exception $e) {
+                        $logger->error("Error moving image to folder: " . $e->getMessage());
+                    }
+                }
+
+            } else if (isset($_FILES["review_image"]) && $_FILES["review_image"]["error"] === 1) {
+                $imageFeedback = "Error uploading image: error {$_FILES['review_image']['error']}";
+            }
+
             // build query
-            $query = "INSERT INTO review(review_content, book_title, book_author, book_rating, reviewer_id) VALUES (:review_content, :book_title, :book_author, :book_rating, :reviewer_id)";
+            $query = "INSERT INTO review(review_content, book_title, book_author, book_rating, image_id, reviewer_id) VALUES (:review_content, :book_title, :book_author, :book_rating, :image_id, :reviewer_id)";
 
             $statement = $db->prepare($query);
-            $statement->bindValue(":review_content", $review_content); // proper casing
+            $statement->bindValue(":review_content", $review_content);
             $statement->bindValue(":book_title", ucwords($book_title)); // proper casing
-            $statement->bindValue(":book_author", ucwords($book_author));
+            $statement->bindValue(":book_author", ucwords($book_author)); // proper casing
             $statement->bindValue(":book_rating", $book_rating);
+            $statement->bindValue(":image_id", $image_id, PDO::PARAM_INT);
             $statement->bindValue(":reviewer_id", $reviewer_id, PDO::PARAM_INT);
 
             if ($statement->execute()) {
-                $logger->debug("Submitted new post query.");
+                $logger->info("Submitted new post query.");
                 // Retrieve the ID for new review post
                 $last_id = $db->lastInsertId();
 
@@ -69,31 +104,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 <body class="d-flex h-100">
     <div class="container-fluid d-flex flex-column">
-        <header class="mb-auto">
-            <nav class="navbar navbar-expand-sm">
-                <div class="container h-100">
-                    <a href="../index.php" class="navbar-brand">BookReviews</a>
-                    <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#homeNav"
-                        aria-controls="homeNav" aria-label="Expand Navigation Bar">
-                        <div class="navbar-toggler-icon"></div>
-                    </button>
-                    <div class="collapse navbar-collapse" id="homeNav">
-                        <ul class="navbar-nav ms-auto">
-                            <li class="nav-item">
-                                <a href="../views/browse.php" class="nav-link">Browse</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="../views/logout.php" class="nav-link">Log Out</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-        </header>
+        <?php require __DIR__ . "/../includes/auth_header.php"; ?>
         <main>
             <div class="container w-50">
                 <h3>Write a Review</h3>
-                <form action="post_review.php" method="post" id="postForm">
+                <form action="post_review.php" method="post" id="postForm" enctype="multipart/form-data">
                     <ul class="list-unstyled">
                         <li>
                             <label for="book_title" class="form-label">Title</label>
@@ -119,7 +134,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             <label for="review_image" class="form-label">Upload a cover picture</label>
                             <input type="file" class="form-control" name="review_image" id="review_image"
                                 aria-describedby="fileFormatHelpId" />
-                            <div id="fileFormatHelpId" class="form-text">Formats accepted: .jpeg, .png</div>
+                            <div id="fileFormatHelpId" class="form-text">Formats accepted: .jpeg, .jpg, .png</div>
+                            <div id="imageFeedback" class="text-danger"><?= $imageFeedback ?></div>
                         </li>
                         <button type="submit" class="btn btn-primary mt-3">Post</button>
                     </ul>

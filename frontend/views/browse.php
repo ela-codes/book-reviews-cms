@@ -4,6 +4,7 @@ require __DIR__ . '/../../vendor/autoload.php';
 require __DIR__ . '/../../backend/config/database.php';
 require __DIR__ . '/../../debug/logger.php';
 require __DIR__ . '/../includes/auth_helper.php';
+require __DIR__ . '/../includes/image_handler.php';
 
 $logger = getLogger("AuthLog", __DIR__ . '/../../debug/userAuth.log');
 $logger->info("Browse page loaded");
@@ -39,7 +40,7 @@ function display_content_preview($content)
 
 
 // sortable by book title, user, last_updated
-$query = "SELECT * FROM review ORDER BY book_title ASC LIMIT 40;";
+$query = "SELECT * FROM review ORDER BY last_modified DESC LIMIT 40;";
 $statement = $db->prepare($query);
 
 $statement->execute();
@@ -66,27 +67,30 @@ $statement->execute();
         <?php require $headerLink ?>
         <main id="mainContent" class="container my-4">
             <h2 class="bg-dark text-white ps-2 mb-3">our community readers</h2>
-            <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 mx-3">
+            <div class="card-columns mx-3">
                 <?php while ($row = $statement->fetch()): ?>
-                    <div class="col">
-                        <a href="review.php?id=<?= $row["review_id"] ?>" style="text-decoration: none;">
-                            <div class="card h-100 d-flex flex-column border-dark">
+                    <div class="card d-flex flex-column border-dark">
+                        <a href="review.php?id=<?= $row["review_id"] ?>" style="text-decoration: none;" class="text-dark">
+                            <?php if (getImageUrlFromDatabase($db, $row["image_id"])): ?>
                                 <img class="card-img-top"
-                                    src="https://freerangestock.com/sample/156228/a-child-reading-a-book.jpg"
+                                    src="<?= "https://localhost/WD2/book-reviews-cms/frontend/auth_user/" . getImageUrlFromDatabase($db, $row["image_id"]) ?>"
                                     alt="card-image" />
-                                <div class="card-body">
-                                    <div class="card-title">
-                                        <p class="fs-6"><strong><?= $row["book_title"] ?></strong></p>
-                                        (<?= $row["book_rating"] ?> <i class="bi bi-star-fill" style="color: #FDCC0D;"></i> by <?= getUsername($db, $row["reviewer_id"]); ?>)
-                                    </div>
-                                    <p class="card-text"><?= display_content_preview($row['review_content']) ?></p>
+                            <?php endif; ?>
+                            <div class="card-body">
+                                <div class="card-title">
+                                    <p class="fs-6"><strong><?= $row["book_title"] ?></strong></p>
+                                    (<?= $row["book_rating"] ?> <i class="bi bi-star-fill" style="color: #FDCC0D;"></i>
+                                    by <?= getUsername($db, $row["reviewer_id"]); ?>)
                                 </div>
-                                <div class="card-footer">
-                                    <small class="text-muted">Last updated on <?= $row["last_modified"] ?> </small>
-                                </div>
+                                <p class="card-text"><?= display_content_preview($row['review_content']) ?></p>
+                            </div>
+                            <div class="card-footer">
+                                <small class="text-muted">Last updated on <?= $row["last_modified"] ?> </small>
                             </div>
                         </a>
                     </div>
+
+
                 <?php endwhile; ?>
             </div>
         </main>

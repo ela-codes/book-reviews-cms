@@ -1,6 +1,10 @@
 .card {
     transition: box-shadow 0.3s ease-in-out;
+    flex: 1 1 calc(33.333% - 1rem);
+    /* max-width: calc(33.333% - 1rem); */
+    margin: 0.5rem;
 }
+
 .card:hover {     
     cursor: pointer; 
     box-shadow:  0 8px 16px 0 rgba(0,0,0,0.3);
@@ -9,4 +13,5 @@
 .card-body, .card-footer {
     font-size: 0.8rem;
 }
+
 
