@@ -60,6 +60,8 @@ $statement->execute();
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../style.css">
+
+    </script>
 </head>
 
 <body class="d-flex h-100">
@@ -67,31 +69,35 @@ $statement->execute();
         <?php require $headerLink ?>
         <main id="mainContent" class="container my-4">
             <h2 class="bg-dark text-white ps-2 mb-3">our community readers</h2>
-            <div class="card-columns mx-3">
-                <?php while ($row = $statement->fetch()): ?>
-                    <div class="card d-flex flex-column border-dark">
-                        <a href="review.php?id=<?= $row["review_id"] ?>" style="text-decoration: none;" class="text-dark">
-                            <?php if (getImageUrlFromDatabase($db, $row["image_id"])): ?>
-                                <img class="card-img-top"
-                                    src="<?= "https://localhost/WD2/book-reviews-cms/frontend/auth_user/" . getImageUrlFromDatabase($db, $row["image_id"]) ?>"
-                                    alt="card-image" />
-                            <?php endif; ?>
-                            <div class="card-body">
-                                <div class="card-title">
-                                    <p class="fs-6"><strong><?= $row["book_title"] ?></strong></p>
-                                    (<?= $row["book_rating"] ?> <i class="bi bi-star-fill" style="color: #FDCC0D;"></i>
-                                    by <?= getUsername($db, $row["reviewer_id"]); ?>)
-                                </div>
-                                <p class="card-text"><?= display_content_preview($row['review_content']) ?></p>
+            <div class="container">
+                <div id="masonry" data-masonry='{"percentPosition": true }'>
+                    <?php while ($row = $statement->fetch()): ?>
+                        <div class="col-sm-6 col-md-5 col-lg-4 col-xl-3 mb-3" id="masonryCard">
+                            <div class="card m-2">
+                                <a href="review.php?id=<?= $row["review_id"] ?>" style="text-decoration: none;"
+                                    class="text-dark">
+                                    <?php if (getImageUrlFromDatabase($db, $row["image_id"])): ?>
+                                        <img class="card-img-top"
+                                            src="<?= "https://localhost/WD2/book-reviews-cms/frontend/auth_user/" . getImageUrlFromDatabase($db, $row["image_id"]) ?>"
+                                            alt="card-image" />
+                                    <?php endif; ?>
+                                    <div class="card-body">
+                                        <div class="card-title">
+                                            <p class="fs-6"><strong><?= $row["book_title"] ?></strong></p>
+                                            (<?= $row["book_rating"] ?> <i class="bi bi-star-fill"
+                                                style="color: #FDCC0D;"></i>
+                                            by <?= getUsername($db, $row["reviewer_id"]); ?>)
+                                        </div>
+                                        <p class="card-text"><?= display_content_preview($row['review_content']) ?></p>
+                                    </div>
+                                    <div class="card-footer">
+                                        <small class="text-muted">Last updated on <?= $row["last_modified"] ?> </small>
+                                    </div>
+                                </a>
                             </div>
-                            <div class="card-footer">
-                                <small class="text-muted">Last updated on <?= $row["last_modified"] ?> </small>
-                            </div>
-                        </a>
-                    </div>
-
-
-                <?php endwhile; ?>
+                        </div>
+                    <?php endwhile; ?>
+                </div>
             </div>
         </main>
         <?php require __DIR__ . "/../includes/footer.php" ?>
@@ -100,6 +106,9 @@ $statement->execute();
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js"
+        integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D" crossorigin="anonymous"
+        async></script>
 </body>
 
 </html>
