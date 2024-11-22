@@ -77,26 +77,26 @@ $reviews = getAllReviews($db, $reviewer_id);
             </div>
             <div class="table-responsive my-5">
                 <table class="table table-sm table-hover align-middle">
-                    <thead class="text-center">
+                    <thead class="text-center text-nowrap">
                         <tr>
-                            <th scope="col" class="col-2 text-nowrap text-start">
+                            <th scope="col" class="col-2 text-start">
                                 <button type="button" class="btn sort-btn" id="titleBtn" onClick="updateSort('book_title', 'titleBtn')"><strong>Title</strong>
                                     <i class="bi bi-sort-alpha-down"></i>
                                 </button>
                             </th>
-                            <th scope="col" class="col-1 text-nowrap">
+                            <th scope="col" class="col-1 text-start">
                                 <button type="button" class="btn sort-btn ASC" id="authorBtn" onClick="updateSort('book_author', 'authorBtn')"><strong>Author</strong>
                                     <i class="bi bi-sort-alpha-down"></i>
                                 </button>
                             </th>
-                            <th scope="col" class="col-1  text-nowrap">
+                            <th scope="col" class="col-1 text-nowrap">
                                 <button type="button" class="btn sort-btn ASC" id="ratingBtn" onClick="updateSort('book_rating', 'ratingBtn')"><strong>Rating</strong>
                                     <i class="bi bi-sort-alpha-down"></i>
                                 </button>
                             </th>
-                            <th scope="col" style="padding-bottom: 0.7rem">Review</th>
-                            <th scope="col" class="col-2">Last Updated</th>
-                            <th scope="col" class="col-1" colspan="3"></th>
+                            <th scope="col" class="col-6" style="padding-bottom: 0.7rem">Review</th>
+                            <th scope="col" class="col-1" style="padding-bottom: 0.7rem">Last Updated</th>
+                            <th scope="col" colspan="2"></th>
                         </tr>
                     </thead>
                     <tbody class="table-hover">
@@ -174,8 +174,7 @@ $reviews = getAllReviews($db, $reviewer_id);
                             <td>${review.review_content_preview}</td>
                             <td class="text-center">${review.last_modified_preview}</td>
                             <td><a href="review.php?id=${review.review_id}" class="btn btn-sm"><i class="bi bi-box-arrow-up-right"></i></a></td>
-                            <td><a href="edit_review.php?id=${review.review_id}" class="btn btn-sm"><i class="bi bi-pencil-square"></i></a></td>
-                            <td><button class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#deleteReview-${review.review_id}"><i class="bi bi-trash3"></i></button></td>
+                            <td><a href="../auth_user/edit_review.php?review_id=${review.review_id}" class="btn btn-sm"><i class="bi bi-pencil-square"></i></a></td>
                         </tr>
                     `;
                             tbody.insertAdjacentHTML("beforeend", row);
@@ -188,7 +187,6 @@ $reviews = getAllReviews($db, $reviewer_id);
                     console.error("Error fetching sorted reviews:", error);
                 });
         }
-
     </script>
 </body>
 

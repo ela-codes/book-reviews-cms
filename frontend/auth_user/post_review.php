@@ -36,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $statement->bindValue(":book_title", ucwords($book_title)); // proper casing
             $statement->bindValue(":book_author", ucwords($book_author));
             $statement->bindValue(":book_rating", $book_rating);
-            $statement->bindValue(":reviewer_id", $reviewer_id);
+            $statement->bindValue(":reviewer_id", $reviewer_id, PDO::PARAM_INT);
 
             if ($statement->execute()) {
                 $logger->debug("Submitted new post query.");
