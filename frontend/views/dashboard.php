@@ -10,7 +10,7 @@ checkSession();
 
 $logger->info("Dashboard page loaded for username - {$_SESSION["username"]}, id - {$_SESSION["user_id"]}");
 
-function display_content_preview($content, $limit = 50, $ellipsis = "...") 
+function display_content_preview($content, $limit = 50, $ellipsis = "...")
 {
     $max_characters = 0;
     $result = "";
@@ -30,7 +30,7 @@ function display_content_preview($content, $limit = 50, $ellipsis = "...")
 function getAllReviews($db, $reviewer_id)
 {
     try {
-        $query = "SELECT * FROM review WHERE reviewer_id = :reviewer_id";
+        $query = "SELECT * FROM review WHERE reviewer_id = :reviewer_id ORDER BY book_title ASC";
         $statement = $db->prepare($query);
         $statement->bindValue(':reviewer_id', $reviewer_id, PDO::PARAM_INT);
         $statement->execute();
@@ -77,79 +77,30 @@ $reviews = getAllReviews($db, $reviewer_id);
             </div>
             <div class="table-responsive my-5">
                 <table class="table table-sm table-hover align-middle">
-                    <thead>
+                    <thead class="text-center">
                         <tr>
-                            <th scope="col" class="col-2">Title</th>
-                            <th scope="col" class="col-1">Author</th>
-                            <th scope="col" class="col-1 text-center">Rating</th>
-                            <th scope="col">Review</th>
-                            <th scope="col" class="col-2 text-center">Last Updated</th>
-                            <th scope="col" class="col-1 text-center" colspan="3"></th>
+                            <th scope="col" class="col-2 text-nowrap text-start">
+                                <button type="button" class="btn sort-btn" id="titleBtn" onClick="updateSort('book_title', 'titleBtn')"><strong>Title</strong>
+                                    <i class="bi bi-sort-alpha-down"></i>
+                                </button>
+                            </th>
+                            <th scope="col" class="col-1 text-nowrap">
+                                <button type="button" class="btn sort-btn ASC" id="authorBtn" onClick="updateSort('book_author', 'authorBtn')"><strong>Author</strong>
+                                    <i class="bi bi-sort-alpha-down"></i>
+                                </button>
+                            </th>
+                            <th scope="col" class="col-1  text-nowrap">
+                                <button type="button" class="btn sort-btn ASC" id="ratingBtn" onClick="updateSort('book_rating', 'ratingBtn')"><strong>Rating</strong>
+                                    <i class="bi bi-sort-alpha-down"></i>
+                                </button>
+                            </th>
+                            <th scope="col" style="padding-bottom: 0.7rem">Review</th>
+                            <th scope="col" class="col-2">Last Updated</th>
+                            <th scope="col" class="col-1" colspan="3"></th>
                         </tr>
                     </thead>
                     <tbody class="table-hover">
-                        <?php if (count($reviews) === 0): ?>
-                            <tr>
-                                <td colspan="7">You haven't created any reviews yet!</td>
-                            </tr>
-                        <?php else: ?>
-                            <?php foreach ($reviews as $review): ?>
-                                <tr>
-                                    <td><?= $review["book_title"] ?></td>
-                                    <td><?= $review["book_author"] ?></td>
-                                    <td class="text-center"><?= $review["book_rating"] ?></td>
-                                    <td><?= display_content_preview($review["review_content"], 80) ?></td>
-                                    <td class="text-center"><?= display_content_preview($review["last_modified"], 10, "") ?></td>
-                                    <td>
-                                    <a href="review.php?id=<?= $review["review_id"] ?>" class="btn btn-sm"><i class="bi bi-box-arrow-up-right"></i></a>
-                                    </td>
-                                    <td>
-                                        <a href="edit_review.php?id=<?= $review["review_id"] ?>" class="btn btn-sm">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-sm" data-bs-toggle="modal"
-                                            data-bs-target="#deleteReview-<?= $review["review_id"] ?>"><i class="bi bi-trash3"></i>
-                                        </button>
-                                        <!-- Modal Body, hidden by default-->
-                                        <!-- <div class="modal fade" id="deleteReview-<?= $review["review_id"] ?>" tabindex="-1"
-                                            role="dialog" aria-labelledby="#deleteUser-<?= $user["user_id"] ?>"
-                                            aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md"
-                                                role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="deleteUserModalTitle">Delete User</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                            aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <p>Are you sure you want delete user
-                                                            <strong><mark><?= $user["username"] ?></mark></strong> from the
-                                                            system?
-                                                        </p>
-                                                        <p class="text-danger">All of the user's posts, comments, and images
-                                                            will be removed.</p>
-                                                        <p class="text-danger">This action cannot be reversed.</p>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-bs-dismiss="modal">Cancel</button>
-                                                        <form action="admin_dashboard.php" method="post">
-                                                            <input type="hidden" name="id" value="<?= $user["user_id"] ?>">
-                                                            <input type="hidden" name="delete" value="1">
-                                                            <input type="submit" name="delete" value="Delete"
-                                                                class="btn btn-primary" />
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div> -->
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
+                        <!-- dynamically populated -->
                     </tbody>
                 </table>
             </div>
@@ -159,8 +110,86 @@ $reviews = getAllReviews($db, $reviewer_id);
 
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
+        </script>
+
+    <!-- SORTING HANDLER -->
+    <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            updateSort('book_title', 'titleBtn', true); // Default sort column
+            
+        });
+
+        function updateSort(column, btnId = 'titleBtn', firstLoad = false) {
+            console.log("running updateSort function")
+            console.log(`Column: ${column}, btnId: ${btnId}, firstLoad: ${firstLoad}`)
+            let currentSortColumn = column; // Default sort column
+            let currentSortDirection = ''
+            let btn = document.querySelector(`#${btnId}`);
+
+
+            if (firstLoad) {
+                currentSortDirection = 'ASC'; // default
+                btn.classList.add('ASC');
+                console.log(btn.classList[2])
+            } else {
+                if (btn.classList[2] === 'ASC') {
+                    currentSortDirection = 'DESC';
+                    btn.innerHTML = `<strong>${btn.firstChild.textContent}</strong> <i class="bi bi-sort-alpha-up"></i>`;
+                    btn.classList.replace('ASC', 'DESC');
+                } else {
+                    currentSortDirection = 'ASC';
+                    btn.innerHTML = `<strong>${btn.firstChild.textContent}</strong> <i class="bi bi-sort-alpha-down"></i>`;
+                    btn.classList.replace('DESC', 'ASC');
+                }
+            }
+            
+            fetchSortedData(currentSortColumn, currentSortDirection);// Fetch sorted data
+        }
+
+        function fetchSortedData(sortColumn, sortDirection) {
+            console.log(`running fetchSortedData function - ${sortColumn}, ${sortDirection}`)
+            fetch("https://localhost/WD2/book-reviews-cms/frontend/includes/fetch_reviews.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    sortColumn: sortColumn,
+                    sortDirection: sortDirection,
+                }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.querySelector("tbody");
+                    tbody.innerHTML = ""; // Clear existing rows
+                    console.log(data)
+                    if (data.success) {
+                        data.reviews.forEach(review => {
+                            const row = `
+                        <tr>
+                            <td>${review.book_title}</td>
+                            <td>${review.book_author}</td>
+                            <td class="text-center">${review.book_rating}</td>
+                            <td>${review.review_content_preview}</td>
+                            <td class="text-center">${review.last_modified_preview}</td>
+                            <td><a href="review.php?id=${review.review_id}" class="btn btn-sm"><i class="bi bi-box-arrow-up-right"></i></a></td>
+                            <td><a href="edit_review.php?id=${review.review_id}" class="btn btn-sm"><i class="bi bi-pencil-square"></i></a></td>
+                            <td><button class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#deleteReview-${review.review_id}"><i class="bi bi-trash3"></i></button></td>
+                        </tr>
+                    `;
+                            tbody.insertAdjacentHTML("beforeend", row);
+                        });
+                    } else {
+                        tbody.innerHTML = "<tr><td colspan='7'>No reviews found.</td></tr>";
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching sorted reviews:", error);
+                });
+        }
+
+    </script>
 </body>
 
 </html>
