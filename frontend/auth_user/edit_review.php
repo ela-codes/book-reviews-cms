@@ -118,12 +118,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["delete"]) && isset($_
                         <li>
                             <label for="book_title" class="form-label">Title</label>
                             <input type="text" name="book_title" id="book_title" class="form-control"
-                                value="<?= htmlspecialchars($row['book_title']) ?>" required />
+                                value="<?= htmlspecialchars_decode($row['book_title'], ENT_QUOTES) ?>" required />
                         </li>
                         <li>
                             <label for="book_author" class="form-label">Author</label>
                             <input type="text" name="book_author" id="book_author" class="form-control"
-                                value="<?= htmlspecialchars($row['book_author']) ?>" required />
+                                value="<?= htmlspecialchars_decode($row['book_author'], ENT_QUOTES) ?>" required />
                         </li>
 
                         <li>
@@ -135,7 +135,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["delete"]) && isset($_
                         <li>
                             <label for="review_content" class="form-label">How was the book?</label>
                             <textarea class="form-control" name="review_content" id="review_content" rows="8"
-                                required><?= htmlspecialchars($row['review_content']) ?></textarea>
+                                required><?= htmlspecialchars_decode($row['review_content'], ENT_QUOTES) ?></textarea>
                         </li>
                         <li>
                             <input type="text" name="review_id" id="review_id" class="form-control"

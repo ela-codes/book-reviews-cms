@@ -86,10 +86,12 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
                             <p class="text-end pt-3 pe-3" style="font-size: 12px;">
                                 <i class="text-right text-secondary">Last updated on <?= $row["last_modified"] ?>.</i>
                             </p>
-                        </div>                        
-                        <div class="col-4">
-                            <img src="<?= $image_url ?>" class="img-fluid rounded-top" alt="image for book review page" />
-                        </div>
+                        </div>    
+                        <?php if (getImageUrlFromDatabase($db, $row["image_id"])): ?>                    
+                            <div class="col-4">
+                                <img src="<?= $image_url ?>" class="img-fluid rounded-top" alt="image for book review page" />
+                            </div>
+                        <?php endif; ?>
                     </div>
                 <?php else: ?>
                     <h3>Uh oh. This post is not available.</h3>

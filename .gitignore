@@ -34,3 +34,4 @@ Thumbs.db
 *.log*
 /debug/
 rules.txt
+/frontend/auth_user/uploads/
