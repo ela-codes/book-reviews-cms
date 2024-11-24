@@ -16,13 +16,16 @@ $browseLink = "https://localhost/WD2/book-reviews-cms/frontend/views/browse.php"
             </button>
             <div class="collapse navbar-collapse" id="homeNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
+                    <li class="nav-item pe-3">
+                        <div class="nav-link text-dark"><i class="bi bi-person"> </i><?= $_SESSION["username"] ?></div>
+                    </li>
+                    <li class="nav-item pe-3">
                         <a href=<?= $dashboardLink ?> class="nav-link">Dashboard</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item pe-3">
                         <a href=<?= $browseLink ?> class="nav-link">Browse</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item pe-3">
                         <button class="nav-link" data-bs-toggle="modal" data-bs-target="#modalId">Logout</button>
 
                         <!-- Modal Body, hidden by default-->
