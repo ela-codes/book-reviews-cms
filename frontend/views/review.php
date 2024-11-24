@@ -68,9 +68,15 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
         <?php require $headerLink ?>
         <main id="mainContent">
             <div class="container w-75 my-4">
+                <?php if (isset($_SESSION['image_upload_feedback'])): ?>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <?= $_SESSION['image_upload_feedback']; ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <?php unset($_SESSION['image_upload_feedback']); ?>
+                <?php endif; ?>
                 <?php if ($row): ?>
                     <div class="row">
-
                         <div class="col border-start border-end">
                             <h2 class="bg-dark text-white ps-2">Book review by <i><?= $reviewer_username ?></i>.</h2>
                             <br>

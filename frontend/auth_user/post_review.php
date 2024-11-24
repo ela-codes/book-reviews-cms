@@ -77,6 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $logger->info("Submitted new post query.");
                 // Retrieve the ID for new review post
                 $last_id = $db->lastInsertId();
+                $_SESSION["image_upload_feedback"] = "The image was not uploaded due to incompatible file type or the file size was too big.";
 
                 // Redirect to the new blog post page
                 header("Location: ../views/review.php?id={$last_id}");
@@ -134,8 +135,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             <label for="review_image" class="form-label">Upload a cover picture</label>
                             <input type="file" class="form-control" name="review_image" id="review_image"
                                 aria-describedby="fileFormatHelpId" />
-                            <div id="fileFormatHelpId" class="form-text">Formats accepted: .jpeg, .jpg, .png</div>
-                            <div id="imageFeedback" class="text-danger"><?= $imageFeedback ?></div>
+                            <div id="fileFormatHelpId" class="form-text">Formats accepted: .jpeg, .jpg, .png. Max size of 123MB.</div>
                         </li>
                         <button type="submit" class="btn btn-primary mt-3">Post</button>
                     </ul>

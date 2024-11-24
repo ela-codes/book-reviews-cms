@@ -123,7 +123,7 @@ if (isset($_POST["username"]) && isset($_POST["password"])) {
         </header>
         <main>
             <div class="container w-50">
-                <h2 class="mt-5">Welcome Back!</h2>
+                <h2 class="bg-dark text-white ps-2 my-5">Welcome Back!</h2>
                 <form action="login.php" method="post" id="loginForm">
                     <?php if (isset($_GET['timeout']) && $_GET['timeout'] == 1): ?>
                         <div class="alert alert-warning" role="alert">
@@ -148,7 +148,7 @@ if (isset($_POST["username"]) && isset($_POST["password"])) {
                         </li>
                     </ul>
 
-                    <button type="submit" class="btn btn-primary mt-3">Log In</button>
+                    <button type="submit" class="btn btn-dark mt-3">Log In</button>
                 </form>
             </div>
         </main>
