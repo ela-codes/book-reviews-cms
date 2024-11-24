@@ -18,6 +18,7 @@ if (isset($_SESSION["username"])) {
     $headerLink = __DIR__ . "/../includes/auth_header.php";
 }
 
+// Handle displaying book review data
 if ($_SERVER["REQUEST_METHOD"] === "GET") {
     // Sanitize
     $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
@@ -49,6 +50,31 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
         exit;
     }
 }
+// Handle comments
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    // Sanitize and validate comment
+    $comment_content = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_SPECIAL_CHARS);
+    $review_id = filter_input(INPUT_POST, 'review_id', FILTER_VALIDATE_INT);
+    $commenter_id = $_SESSION['user_id']; // Assuming user_id is stored in session
+
+    if ($comment_content && $review_id && $commenter_id) {
+        // Insert comment into database
+        $insertQuery = "INSERT INTO comment (review_id, commenter_id, comment_content) VALUES (:review_id, :commenter_id, :comment_content)";
+        $insertStmt = $db->prepare($insertQuery);
+        $insertStmt->bindValue(':review_id', $review_id, PDO::PARAM_INT);
+        $insertStmt->bindValue(':commenter_id', $commenter_id, PDO::PARAM_INT);
+        $insertStmt->bindValue(':comment_content', $comment_content);
+        $insertStmt->execute();
+
+        // Redirect to the same page to avoid form resubmission
+        header("Location: review.php?id=" . $review_id);
+        exit;
+    } else {
+        $_SESSION['comment_feedback'] = "Invalid input. Please try again.";
+        header("Location: review.php?id=" . $review_id);
+        exit;
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -67,7 +93,7 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
     <div class="container-fluid d-flex flex-column">
         <?php require $headerLink ?>
         <main id="mainContent">
-            <div class="container w-75 my-4">
+            <div class="container w-75 my-5">
                 <?php if (isset($_SESSION['image_upload_feedback'])): ?>
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <?= $_SESSION['image_upload_feedback']; ?>
@@ -77,7 +103,7 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
                 <?php endif; ?>
                 <?php if ($row): ?>
                     <div class="row">
-                        <div class="col border-start border-end">
+                        <div class="col border-start">
                             <h2 class="bg-dark text-white ps-2">Book review by <i><?= $reviewer_username ?></i>.</h2>
                             <br>
                             <h5 class="ps-2">
@@ -85,19 +111,60 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
                                 <strong><?= $row["book_author"] ?></strong></u>
                                 (<?= $row["book_rating"] ?> <i class="bi bi-star-fill" style="color: #FDCC0D;"></i>)
                             </h5>
-                            <p class="container ps-4 pe-3">
+                            <p class="ps-2" style="font-size: 12px;">
+                                <i class="text-left text-secondary">Updated on <?= $row["last_modified"] ?></i>
+                            </p>
+                            <p class="container pe-3">
                                 <i class="bi bi-chat-right-quote-fill pe-2"></i>
                                 <?= nl2br($row["review_content"]) ?>
                             </p>
-                            <p class="text-end pt-3 pe-3" style="font-size: 12px;">
-                                <i class="text-right text-secondary">Last updated on <?= $row["last_modified"] ?>.</i>
-                            </p>
-                        </div>    
-                        <?php if (getImageUrlFromDatabase($db, $row["image_id"])): ?>                    
-                            <div class="col-4">
+                            
+                        </div>
+                        <?php if (getImageUrlFromDatabase($db, $row["image_id"])): ?>
+                            <div class="col-5 pb-4">
                                 <img src="<?= $image_url ?>" class="img-fluid rounded-top" alt="image for book review page" />
                             </div>
                         <?php endif; ?>
+                    </div>
+
+                    <div class="row mb-5 border-top border-end pt-4">
+                        <div class="col">
+                            <h5 class="bg-dark text-white ps-2">Comments</h5>
+                            <?php
+                            $commentQuery = "SELECT c.*, u.username FROM comment c JOIN user u ON c.commenter_id = u.user_id WHERE c.review_id = :review_id ORDER BY c.created_at DESC";
+                            $commentStmt = $db->prepare($commentQuery);
+                            $commentStmt->bindValue(':review_id', $id, PDO::PARAM_INT);
+                            $commentStmt->execute();
+                            $comments = $commentStmt->fetchAll();
+
+                            if ($comments):
+                                foreach ($comments as $comment):
+                                    ?>
+                                    <div class="mb-3">
+                                        <p><strong><?= htmlspecialchars($comment['username']) ?>:</strong>
+                                        <?= htmlspecialchars_decode($comment['comment_content']) ?>
+                                        <small class="text-end" style="font-size: 12px;">
+                                            <i class="text-secondary">(<?= $comment['created_at'] ?>)</i>
+                                        </small></p>
+                                    </div>
+                                    <?php
+                                endforeach;
+                            else:
+                                ?>
+                                <small>There are no comments on this post yet!</small>
+                            <?php endif; ?>
+                        </div>
+                        <div class="col-5">
+                            <h5 class="bg-dark text-white ps-2">Leave a Comment</h5>
+                            <form action="" method="post">
+                                <div class="mb-3">
+                                    <label for="comment" class="form-label">Comment</label>
+                                    <textarea class="form-control" id="comment" name="comment" rows="2" required></textarea>
+                                </div>
+                                <input type="hidden" name="review_id" value="<?= $id ?>">
+                                <button type="submit" class="btn btn-sm btn-dark">Submit</button>
+                            </form>
+                        </div>
                     </div>
                 <?php else: ?>
                     <h3>Uh oh. This post is not available.</h3>
