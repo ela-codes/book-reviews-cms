@@ -59,7 +59,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 }
 
             } else if (isset($_FILES["review_image"]) && $_FILES["review_image"]["error"] === 1) {
-                $imageFeedback = "Error uploading image: error {$_FILES['review_image']['error']}";
+                $_SESSION["image_upload_feedback"] = "The image was not uploaded due to incompatible file type or the file size was too big.";
             }
 
             // build query
@@ -77,7 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $logger->info("Submitted new post query.");
                 // Retrieve the ID for new review post
                 $last_id = $db->lastInsertId();
-                $_SESSION["image_upload_feedback"] = "The image was not uploaded due to incompatible file type or the file size was too big.";
+                
 
                 // Redirect to the new blog post page
                 header("Location: ../views/review.php?id={$last_id}");
