@@ -36,11 +36,13 @@ $pageGreeting = "Hi, there! Let's get started.";
 
 $requestFrom = "USER";
 $redirectLink = "https://localhost/WD2/book-reviews-cms/frontend/views/dashboard.php";
+$headerLink = __DIR__ . "/../includes/guest_header.php";
 
 if (isset($_SESSION["role"]) && $_SESSION["role"] === "ADMIN") {
     $requestFrom = "ADMIN";
     $redirectLink = "https://localhost/WD2/book-reviews-cms/frontend/auth_user/admin_dashboard.php";
     $pageGreeting = "Hi, admin! Let's add a new user.";
+    $headerLink = __DIR__ . "/../includes/admin_header.php";
 }
 
 
@@ -99,31 +101,12 @@ if (isset($_POST["username"]) && isset($_POST["email"]) && isset($_POST["passwor
     <title>Book Reviews - Register</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 
 <body class="d-flex h-100">
     <div class="container-fluid d-flex flex-column">
-        <header class="mb-auto">
-            <nav class="navbar navbar-expand-sm">
-                <div class="container h-100">
-                    <a href="../index.php" class="navbar-brand">BookReviews</a>
-                    <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#homeNav"
-                        aria-controls="homeNav" aria-label="Expand Navigation Bar">
-                        <div class="navbar-toggler-icon"></div>
-                    </button>
-                    <div class="collapse navbar-collapse" id="homeNav">
-                        <ul class="navbar-nav ms-auto">
-                            <li class="nav-item">
-                                <a href="../views/login.php" class="nav-link">Log In</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="../views/browse.php" class="nav-link">Browse</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-        </header>
+        <?php require $headerLink ?>
         <main>
             <div class="container w-50">
                 <h2 class="bg-dark text-white ps-2 mt-5 mb-5"><?= $pageGreeting ?></h2>

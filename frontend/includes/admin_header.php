@@ -1,7 +1,8 @@
 <?php
 $logoutLink = "https://localhost/WD2/book-reviews-cms/frontend/views/logout.php";
 $indexLink = "https://localhost/WD2/book-reviews-cms/frontend/index.php";
-$dashboardLink = "https://localhost/WD2/book-reviews-cms/frontend/auth_user/admin_dashboard.php";
+$adminDashboardLink = "https://localhost/WD2/book-reviews-cms/frontend/auth_user/admin_dashboard.php";
+$reviewDashboardLink = "https://localhost/WD2/book-reviews-cms/frontend/views/dashboard.php";
 $browseLink = "https://localhost/WD2/book-reviews-cms/frontend/views/browse.php";
 ?>
 
@@ -16,8 +17,14 @@ $browseLink = "https://localhost/WD2/book-reviews-cms/frontend/views/browse.php"
             </button>
             <div class="collapse navbar-collapse" id="homeNav">
                 <ul class="navbar-nav ms-auto">
+                    <li class="nav-item pe-3">
+                        <div class="nav-link text-dark"><i class="bi bi-person"> </i><?= $_SESSION["username"] ?></div>
+                    </li>
                     <li class="nav-item">
-                        <a href=<?= $dashboardLink ?> class="nav-link">Dashboard</a>
+                        <a href=<?= $adminDashboardLink ?> class="nav-link">Admin Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href=<?= $reviewDashboardLink ?> class="nav-link">Review Dashboard</a>
                     </li>
                     <li class="nav-item">
                         <a href=<?= $browseLink ?> class="nav-link">Browse</a>

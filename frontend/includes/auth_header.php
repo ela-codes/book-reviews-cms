@@ -3,6 +3,7 @@ $logoutLink = "https://localhost/WD2/book-reviews-cms/frontend/views/logout.php"
 $indexLink = "https://localhost/WD2/book-reviews-cms/frontend/index.php";
 $dashboardLink = "https://localhost/WD2/book-reviews-cms/frontend/views/dashboard.php";
 $browseLink = "https://localhost/WD2/book-reviews-cms/frontend/views/browse.php";
+
 ?>
 
 

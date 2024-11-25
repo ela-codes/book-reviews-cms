@@ -15,8 +15,10 @@ $headerLink = __DIR__ . "/../includes/guest_header.php";
 
 
 // if authenticated user session is active, show auth_header
-if (isset($_SESSION["username"])) {
+if (isset($_SESSION["role"]) && $_SESSION["role"] === "USER") {
     $headerLink = __DIR__ . "/../includes/auth_header.php";
+} else if ($_SESSION["role"] === "ADMIN") {
+    $headerLink = __DIR__ . "/../includes/admin_header.php";
 }
 
 function display_content_preview($content)

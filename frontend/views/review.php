@@ -12,11 +12,18 @@ $logger->info("Full review page loaded");
 session_start();
 
 $headerLink = __DIR__ . "/../includes/guest_header.php";
+$commentFeedback = "You must be logged in to leave a comment!";
 
-// if authenticated user session is active, show auth_header
-if (isset($_SESSION["username"])) {
-    $headerLink = __DIR__ . "/../includes/auth_header.php";
+// if authenticated user session is active, show proper header and default comment feedback
+if(isset($_SESSION["role"])) {
+    if ($_SESSION["role"] === "USER") {
+        $headerLink = __DIR__ . "/../includes/auth_header.php";
+        $commentFeedback = "There are no comments on this post yet!";
+    } else if ($_SESSION["role"] === "ADMIN") {
+        $headerLink = __DIR__ . "/../includes/admin_header.php";
+    }
 }
+
 
 // Handle displaying book review data
 if ($_SERVER["REQUEST_METHOD"] === "GET") {
@@ -151,20 +158,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                 endforeach;
                             else:
                                 ?>
-                                <small>There are no comments on this post yet!</small>
+                                <small><?= $commentFeedback ?></small>
                             <?php endif; ?>
                         </div>
-                        <div class="col-5">
-                            <h5 class="bg-dark text-white ps-2">Leave a Comment</h5>
-                            <form action="" method="post">
-                                <div class="mb-3">
-                                    <label for="comment" class="form-label">Comment</label>
-                                    <textarea class="form-control" id="comment" name="comment" rows="2" required></textarea>
-                                </div>
-                                <input type="hidden" name="review_id" value="<?= $id ?>">
-                                <button type="submit" class="btn btn-sm btn-dark">Submit</button>
-                            </form>
-                        </div>
+                        <?php if(isset($_SESSION["username"])): ?>
+                            <div class="col-5">
+                                <h5 class="bg-dark text-white ps-2">Leave a Comment</h5>
+                                <form action="" method="post">
+                                    <div class="mb-3">
+                                        <label for="comment" class="form-label">Comment</label>
+                                        <textarea class="form-control" id="comment" name="comment" rows="2" required></textarea>
+                                    </div>
+                                    <input type="hidden" name="review_id" value="<?= $id ?>">
+                                    <button type="submit" class="btn btn-sm btn-dark">Submit</button>
+                                </form>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 <?php else: ?>
                     <h3>Uh oh. This post is not available.</h3>

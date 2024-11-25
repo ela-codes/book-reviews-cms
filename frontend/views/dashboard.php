@@ -45,6 +45,12 @@ function getAllReviews($db, $reviewer_id)
 
 $reviewer_id = $_SESSION["user_id"];
 $reviews = getAllReviews($db, $reviewer_id);
+$headerLink = __DIR__ . "/../includes/auth_header.php";
+
+
+if ($_SESSION["role"] === "ADMIN") {
+    $headerLink = __DIR__ . "/../includes/admin_header.php";
+}
 
 
 ?>
@@ -63,7 +69,7 @@ $reviews = getAllReviews($db, $reviewer_id);
 
 <body class="d-flex h-100">
     <div class="container-fluid d-flex flex-column">
-        <?php require __DIR__ . "/../includes/auth_header.php" ?>
+        <?php require $headerLink ?>
 
         <main class="container my-4 h-100">
             <h2 class="bg-dark text-white ps-2 my-5">welcome to your dashboard!</h2>

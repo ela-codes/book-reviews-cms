@@ -10,6 +10,13 @@ $logger->info('USER-Edit review page loaded');
 
 checkSession();
 
+$headerLink = __DIR__ . "/../includes/auth_header.php";
+
+
+if ($_SESSION["role"] === "ADMIN") {
+    $headerLink = __DIR__ . "/../includes/admin_header.php";
+}
+
 // Handle GET request in order to display review data
 if ($_SERVER["REQUEST_METHOD"] === "GET") {
     // Sanitize
@@ -109,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["delete"]) && isset($_
 
 <body class="d-flex h-100">
     <div class="container-fluid d-flex flex-column">
-        <?php require __DIR__ . "/../includes/auth_header.php"; ?>
+        <?php require $headerLink; ?>
         <main>
             <div class="container w-50">
                 <h3>Edit a Review</h3>
