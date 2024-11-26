@@ -3,6 +3,7 @@ require __DIR__ . '/../includes/session_handler.php';
 require __DIR__ . '/../../vendor/autoload.php';
 require __DIR__ . '/../../backend/config/database.php';
 require __DIR__ . '/../../debug/logger.php';
+require __DIR__ . '/../includes/image_handler.php';
 
 
 $logger = getLogger("AuthLog", __DIR__ . '/../../debug/userAuth.log');
@@ -99,6 +100,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["delete"]) && isset($_
     }
 
 }
+
+
+// Handle delete image form submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["deleteImage"]) && isset($_POST["image_id"])) {
+    $image_id = filter_input(INPUT_POST, 'image_id', FILTER_SANITIZE_NUMBER_INT);
+
+    try {
+        // Get image path
+        $query = "SELECT image_url FROM image WHERE image_id = :image_id";
+        $statement = $db->prepare($query);
+        $statement->bindValue(':image_id', $image_id, PDO::PARAM_INT);
+        $statement->execute();
+        $image = $statement->fetch();
+
+        if ($image) {
+            $image_path = $image['image_url'];
+
+            // Delete the image file from the uploads folder
+            if (file_exists($image_path)) {
+                unlink($image_path);
+            }
+
+            // Delete from the database
+            $query = "DELETE FROM image WHERE image_id = :image_id";
+            $statement = $db->prepare($query);
+            $statement->bindValue(':image_id', $image_id, PDO::PARAM_INT);
+            $statement->execute();
+
+            $_SESSION['success_message'] = "Image deleted successfully.";
+            $logger->info("Successfully deleted image with ID: $image_id");
+
+            header("Location: https://localhost/WD2/book-reviews-cms/frontend/views/dashboard.php");
+            exit();
+        } else {
+            throw new Exception("Image not found.");
+        }
+    } catch (Exception $e) {
+        $logger->error("Error deleting image: " . $e->getMessage());
+    }
+}
 ?>
 
 
@@ -118,48 +159,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["delete"]) && isset($_
     <div class="container-fluid d-flex flex-column">
         <?php require $headerLink; ?>
         <main>
-            <div class="container w-50">
+            <div class="container w-75">
                 <h3>Edit a Review</h3>
-                <form action="edit_review.php" method="post" id="postForm">
-                    <ul class="list-unstyled">
-                        <li>
-                            <label for="book_title" class="form-label">Title</label>
-                            <input type="text" name="book_title" id="book_title" class="form-control"
-                                value="<?= htmlspecialchars_decode($row['book_title'], ENT_QUOTES) ?>" required />
-                        </li>
-                        <li>
-                            <label for="book_author" class="form-label">Author</label>
-                            <input type="text" name="book_author" id="book_author" class="form-control"
-                                value="<?= htmlspecialchars_decode($row['book_author'], ENT_QUOTES) ?>" required />
-                        </li>
-
-                        <li>
-                            <label for="book_rating" class="form-label">My Rating:</label><span class="ms-3 me-1"
-                                id="ratingValue"></span><i class="bi bi-star-fill" style="color: #FDCC0D;"></i>
-                            <input type="range" name="book_rating" class="form-range " min="1" max="5" step="0.5"
-                                value="<?= htmlspecialchars($row['book_rating']) ?>" id="ratingRange" required />
-                        </li>
-                        <li>
-                            <label for="review_content" class="form-label">How was the book?</label>
-                            <textarea class="form-control" name="review_content" id="review_content" rows="8"
-                                required><?= htmlspecialchars_decode($row['review_content'], ENT_QUOTES) ?></textarea>
-                        </li>
-                        <li>
-                            <input type="text" name="review_id" id="review_id" class="form-control"
-                                value="<?= htmlspecialchars($row['review_id']) ?>" hidden />
-                        </li>
-
-                        <div class="row">
-                            <div class="col"><button type="submit" class="btn btn-primary mt-3">Apply Changes</button>
-                            </div>
-                            <div class="col">
-                                <button type="button" class="btn btn-light mt-3 float-end" data-bs-toggle="modal"
-                                    data-bs-target="#deleteReview-<?= $row["review_id"] ?>">Delete Review
-                                </button>
-                            </div>
+                <div class="row">
+                    <div class="col">
+                        <form action="edit_review.php" method="post" id="postForm">
+                            <ul class="list-unstyled">
+                                <li>
+                                    <label for="book_title" class="form-label">Title</label>
+                                    <input type="text" name="book_title" id="book_title" class="form-control"
+                                        value="<?= htmlspecialchars_decode($row['book_title'], ENT_QUOTES) ?>" required />
+                                </li>
+                                <li>
+                                    <label for="book_author" class="form-label">Author</label>
+                                    <input type="text" name="book_author" id="book_author" class="form-control"
+                                        value="<?= htmlspecialchars_decode($row['book_author'], ENT_QUOTES) ?>" required />
+                                </li>
+                                <li>
+                                    <label for="book_rating" class="form-label">My Rating:</label><span class="ms-3 me-1"
+                                        id="ratingValue"></span><i class="bi bi-star-fill" style="color: #FDCC0D;"></i>
+                                    <input type="range" name="book_rating" class="form-range " min="1" max="5" step="0.5"
+                                        value="<?= htmlspecialchars($row['book_rating']) ?>" id="ratingRange" required />
+                                </li>
+                                <li>
+                                    <label for="review_content" class="form-label">How was the book?</label>
+                                    <textarea class="form-control" name="review_content" id="review_content" rows="8"
+                                        required><?= htmlspecialchars_decode($row['review_content'], ENT_QUOTES) ?></textarea>
+                                </li>
+                                <li>
+                                    <input type="text" name="review_id" id="review_id" class="form-control"
+                                        value="<?= htmlspecialchars($row['review_id']) ?>" hidden />
+                                </li>
+                                <div class="row">
+                                    <div class="col-6"><button type="submit" class="btn btn-primary mt-3">Apply Changes</button>
+                                    </div>
+                                    <?php if (getImageUrlFromDatabase($db, $row["image_id"])): ?>
+                                        <div class="col">
+                                            <button type="button" class="btn btn-light mt-3 float-end" data-bs-toggle="modal"
+                                                data-bs-target="#deleteImage-<?= $row["image_id"] ?>">Delete Image
+                                            </button>
+                                        </div>
+                                    <?php endif; ?>
+                                    <div class="col">
+                                        <button type="button" class="btn btn-light mt-3 float-end" data-bs-toggle="modal"
+                                            data-bs-target="#deleteReview-<?= $row["review_id"] ?>">Delete Review
+                                        </button>
+                                    </div>
+                                </div>
+                            </ul>
+                        </form>
+                    </div>
+                    <?php if (getImageUrlFromDatabase($db, $row["image_id"])): ?>
+                        <div class="col-4 pb-4">
+                            <img src="<?= "https://localhost/WD2/book-reviews-cms/frontend/auth_user/" . getImageUrlFromDatabase($db, $row["image_id"]); ?>" class="img-fluid rounded-top" alt="image for book review page" />
                         </div>
-                    </ul>
-                </form>
+                    <?php endif; ?>
+                </div>
 
                 <!-- Modal Body, hidden by default-->
                 <div class="modal fade" id="deleteReview-<?= $row["review_id"] ?>" tabindex="-1" role="dialog"
@@ -183,7 +238,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["delete"]) && isset($_
                                 <form action="edit_review.php" method="post">
                                     <input type="hidden" name="review_id" value="<?= $row["review_id"] ?>">
                                     <input type="hidden" name="delete" value="1">
-                                    <input type="submit" name="delete" value="Delete" class="btn btn-primary" />
+                                    <input type="submit" name="delete" value="Delete Post" class="btn btn-primary" />
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="deleteImage-<?= $row["image_id"] ?>" tabindex="-1" role="dialog"
+                    aria-labelledby="deleteImage-<?= $row["image_id"] ?>" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteImageModalTitle">Delete Image</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Are you sure you want to delete your image for
+                                    <strong><mark><?= $row["book_title"] ?></mark></strong> by
+                                    <strong><mark><?= $row["book_author"] ?></mark></strong>?
+                                </p>
+                                <p class="text-danger">This action cannot be reversed.</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <form action="edit_review.php" method="post">
+                                    <input type="hidden" name="image_id" value="<?= $row["image_id"] ?>">
+                                    <input type="hidden" name="deleteImage" value="1">
+                                    <input type="submit" name="deleteImage" value="Delete Image"
+                                        class="btn btn-primary" />
                                 </form>
                             </div>
                         </div>

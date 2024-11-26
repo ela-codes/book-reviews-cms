@@ -55,6 +55,16 @@ function getImageUrlFromDatabase($db, $image_id) {
     }
 }
 
+function deleteImageFromDatabase($db, $image_id) {
+    $query = "DELETE FROM image WHERE image_id = :image_id";
+    $statement = $db->prepare($query);
+    $statement->bindValue(':image_id', $image_id, PDO::PARAM_INT);
+
+    if ($statement->execute()) {
+        return true;
+    }
+}
+
 
 // when a review is removed, the image should be removed too
 // when a review is created, the image could be created too (if user submits it in the form)
