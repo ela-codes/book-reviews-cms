@@ -25,7 +25,7 @@ function validateLogin($db, $username, $password)
 
     // check that password related to that username exists and it passes verification 
     $isPasswordValid = password_verify($password, $hashedPassword);
-    
+
     return $hashedPassword && $isPasswordValid;
 }
 
@@ -35,7 +35,8 @@ function validateLogin($db, $username, $password)
  * @param string $username A string representation of a username.
  * @return string A string representing the user id.
  */
-function getUserId($db, $username) {
+function getUserId($db, $username)
+{
     $statement = $db->prepare("SELECT user_id FROM user WHERE username = :username");
     $statement->bindValue(":username", $username);
     $statement->execute();
@@ -105,7 +106,8 @@ if (isset($_POST["username"]) && isset($_POST["password"])) {
             <nav class="navbar navbar-expand-sm">
                 <div class="container h-100">
                     <a href="../index.php" class="navbar-brand">BookReviews</a>
-                    <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#homeNav" aria-controls="homeNav" aria-label="Expand Navigation Bar">
+                    <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#homeNav"
+                        aria-controls="homeNav" aria-label="Expand Navigation Bar">
                         <div class="navbar-toggler-icon"></div>
                     </button>
                     <div class="collapse navbar-collapse" id="homeNav">
@@ -115,6 +117,9 @@ if (isset($_POST["username"]) && isset($_POST["password"])) {
                             </li>
                             <li class="nav-item">
                                 <a href="../views/browse.php" class="nav-link">Browse</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../views/search.php" class="nav-link">Search</a>
                             </li>
                         </ul>
                     </div>

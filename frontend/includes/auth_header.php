@@ -27,7 +27,7 @@ $searchLink = "https://localhost/WD2/book-reviews-cms/frontend/views/search.php"
                     <li class="nav-item pe-3">
                         <a href=<?= $browseLink ?> class="nav-link">Browse</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item pe-3">
                         <a href=<?= $searchLink ?> class="nav-link">Search</a>
                     </li>
                     <li class="nav-item pe-3">
