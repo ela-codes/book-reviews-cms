@@ -18,11 +18,11 @@ if(isset($_SESSION["role"])) {
     if ($_SESSION["role"] === "USER") {
         $headerLink = __DIR__ . "/includes/auth_header.php";
         $commentFeedback = "There are no comments on this post yet!";
-        $headerLink = __DIR__ . "/includes/auth_header.php";
-        $loggedIn = true;
+
     } else if ($_SESSION["role"] === "ADMIN") {
         $headerLink = __DIR__ . "/includes/admin_header.php";
     }
+    $loggedIn = true;
 }
 
 ?>

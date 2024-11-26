@@ -4,6 +4,7 @@ $indexLink = "https://localhost/WD2/book-reviews-cms/frontend/index.php";
 $adminDashboardLink = "https://localhost/WD2/book-reviews-cms/frontend/auth_user/admin_dashboard.php";
 $reviewDashboardLink = "https://localhost/WD2/book-reviews-cms/frontend/views/dashboard.php";
 $browseLink = "https://localhost/WD2/book-reviews-cms/frontend/views/browse.php";
+$searchLink = "https://localhost/WD2/book-reviews-cms/frontend/views/search.php";
 ?>
 
 
@@ -28,6 +29,9 @@ $browseLink = "https://localhost/WD2/book-reviews-cms/frontend/views/browse.php"
                     </li>
                     <li class="nav-item">
                         <a href=<?= $browseLink ?> class="nav-link">Browse</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href=<?= $searchLink ?> class="nav-link">Search</a>
                     </li>
                     <li class="nav-item">
                         <button class="nav-link" data-bs-toggle="modal" data-bs-target="#modalId">Logout</button>

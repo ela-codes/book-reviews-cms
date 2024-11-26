@@ -3,6 +3,7 @@
 $indexLink = "https://localhost/WD2/book-reviews-cms/frontend/index.php";
 $loginLink = "https://localhost/WD2/book-reviews-cms/frontend/views/login.php";
 $browseLink = "https://localhost/WD2/book-reviews-cms/frontend/views/browse.php";
+$searchLink = "https://localhost/WD2/book-reviews-cms/frontend/views/search.php";
 
 ?>
 
@@ -21,6 +22,9 @@ $browseLink = "https://localhost/WD2/book-reviews-cms/frontend/views/browse.php"
                     </li>
                     <li class="nav-item">
                         <a href=<?= $browseLink ?> class="nav-link">Browse</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href=<?= $searchLink ?> class="nav-link">Search</a>
                     </li>
                 </ul>
             </div>

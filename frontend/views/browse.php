@@ -5,6 +5,7 @@ require __DIR__ . '/../../backend/config/database.php';
 require __DIR__ . '/../../debug/logger.php';
 require __DIR__ . '/../includes/auth_helper.php';
 require __DIR__ . '/../includes/image_handler.php';
+require __DIR__ . '/../includes/review_content_helper.php';
 
 $logger = getLogger("AuthLog", __DIR__ . '/../../debug/userAuth.log');
 $logger->info("Browse page loaded");
@@ -15,30 +16,13 @@ $headerLink = __DIR__ . "/../includes/guest_header.php";
 
 
 // if authenticated user session is active, show auth_header
-if (isset($_SESSION["role"]) && $_SESSION["role"] === "USER") {
-    $headerLink = __DIR__ . "/../includes/auth_header.php";
-} else if ($_SESSION["role"] === "ADMIN") {
-    $headerLink = __DIR__ . "/../includes/admin_header.php";
-}
-
-function display_content_preview($content)
-{
-    $limit = 150;
-    $max_characters = 0;
-    $result = "";
-    $contentLength = strlen($content);
-
-    if ($contentLength < $limit) {
-        $max_characters = $contentLength;
-    } else {
-        $max_characters = $limit;
+if (isset($_SESSION["role"])) {
+    if ($_SESSION["role"] === "USER") {
+        $headerLink = __DIR__ . "/../includes/auth_header.php";
+    } else if ($_SESSION["role"] === "ADMIN") {
+        $headerLink = __DIR__ . "/../includes/admin_header.php";
     }
-
-    for ($i = 0; $i < $max_characters; $i++) {
-        $result .= $content[$i];
-    }
-    return $result . "...";
-}
+} 
 
 
 // sortable by book title, user, last_updated
@@ -71,6 +55,7 @@ $statement->execute();
         <?php require $headerLink ?>
         <main id="mainContent" class="container my-4">
             <h2 class="bg-dark text-white ps-2 mb-3">our community readers</h2>
+            
             <div class="container">
                 <div id="masonry" data-masonry='{"percentPosition": true }'>
                     <?php while ($row = $statement->fetch()): ?>
@@ -91,6 +76,7 @@ $statement->execute();
                                             by <?= getUsername($db, $row["reviewer_id"]); ?>)
                                         </div>
                                         <p class="card-text"><?= display_content_preview($row['review_content']) ?></p>
+
                                     </div>
                                     <div class="card-footer">
                                         <small class="text-muted">Last updated on <?= $row["last_modified"] ?> </small>
