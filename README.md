@@ -5,6 +5,7 @@
 BookReviews is a dynamic Content Management System (CMS) designed to serve as a centralized platform for book enthusiasts like me :)
 
 The CMS for BookReviews is built with an emphasis on clean, minimalistic design and easy navigation.
+![1732666609204](https://github.com/user-attachments/assets/ebe87d62-bf74-4ecd-a46e-6e7628a41344)
 
 ### <ins>💻 languages used</ins>
 - PHP 
